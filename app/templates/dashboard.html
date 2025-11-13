@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - ActiScore{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Welcome Section -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            Welcome back, {{ current_user.name }}!
+        </h1>
+        <p class="text-gray-600">
+            Here's an overview of your AI analysis activities and available tools.
+        </p>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-video text-blue-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Videos Analyzed</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ user_videos }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-file-alt text-green-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Documents Summarized</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ user_summaries }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-graduation-cap text-purple-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Research Papers</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ user_papers }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-chart-line text-orange-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Analysis</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ user_videos + user_summaries + user_papers }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="{{ url_for('actiscore.multimodal_emotion') }}" 
+               class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-smile text-blue-600"></i>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Analyze Emotions</p>
+                    <p class="text-sm text-gray-500">Upload video for analysis</p>
+                </div>
+            </a>
+            
+            <a href="{{ url_for('intellilearn.legal_summarizer') }}" 
+               class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-file-contract text-green-600"></i>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Summarize Document</p>
+                    <p class="text-sm text-gray-500">Legal document analysis</p>
+                </div>
+            </a>
+            
+            <a href="{{ url_for('intellilearn.research_recommender') }}" 
+               class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-graduation-cap text-purple-600"></i>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Research Papers</p>
+                    <p class="text-sm text-gray-500">Find relevant papers</p>
+                </div>
+            </a>
+            
+            <a href="{{ url_for('intellilearn.video_summarizer') }}" 
+               class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-video text-red-600"></i>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Summarize Video</p>
+                    <p class="text-sm text-gray-500">Educational content</p>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <!-- AI Features Overview -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-6">AI Features Overview</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Multimodal Emotion Analysis -->
+            <div class="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-smile text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">Multimodal Emotion</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Analyze facial expressions and speech patterns to understand emotions in videos.</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Status: <span class="text-green-600 font-medium">Active</span></span>
+                    <a href="{{ url_for('actiscore.multimodal_emotion') }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                        Use Tool <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- AI Attendance -->
+            <div class="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-user-check text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">AI Attendance</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Camera-based attendance monitoring with emotion analytics.</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Status: <span class="text-green-600 font-medium">Active</span></span>
+                    <a href="{{ url_for('intellilearn.attendance_monitoring') }}" class="text-green-600 hover:text-green-800 font-medium text-sm">
+                        Use Tool <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Legal Summarizer -->
+            <div class="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-file-contract text-purple-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">Legal Summarizer</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Summarize and query legal documents with AI assistance.</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Status: <span class="text-green-600 font-medium">Active</span></span>
+                    <a href="{{ url_for('intellilearn.legal_summarizer') }}" class="text-purple-600 hover:text-purple-800 font-medium text-sm">
+                        Use Tool <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Research Recommender -->
+            <div class="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-graduation-cap text-yellow-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">Research Recommender</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Discover relevant research papers and get intelligent recommendations.</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Status: <span class="text-green-600 font-medium">Active</span></span>
+                    <a href="{{ url_for('intellilearn.research_recommender') }}" class="text-yellow-600 hover:text-yellow-800 font-medium text-sm">
+                        Use Tool <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Video Summarizer -->
+            <div class="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-video text-red-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">Video Summarizer</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Generate concise summaries of educational videos and lectures.</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Status: <span class="text-green-600 font-medium">Active</span></span>
+                    <a href="{{ url_for('intellilearn.video_summarizer') }}" class="text-red-600 hover:text-red-800 font-medium text-sm">
+                        Use Tool <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Startup Predictor -->
+            <div class="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-rocket text-orange-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">Startup Predictor</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Predict startup success probability using machine learning.</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Status: <span class="text-green-600 font-medium">Active</span></span>
+                    <a href="{{ url_for('intellilearn.startup_predictor') }}" class="text-orange-600 hover:text-orange-800 font-medium text-sm">
+                        Use Tool <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fade-in 1s ease-out;
+}
+</style>
+{% endblock %}

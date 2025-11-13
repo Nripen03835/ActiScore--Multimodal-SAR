@@ -1,0 +1,1464 @@
+{% extends "base.html" %}
+
+{% block title %}AI Video Summarizer - IntelliLearn{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                <i class="fas fa-video text-indigo-600 mr-3"></i>AI Video Summarizer
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Transform educational videos into concise summaries with full transcript extraction. 
+                Get key insights, timestamps, and searchable text content from any video.
+            </p>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Panel - Input Section -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Video Input Card -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-upload text-indigo-600 mr-2"></i>Video Input
+                    </h2>
+                    
+                    <!-- Video URL Input -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            YouTube URL or Video Link
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="url" 
+                                id="video-url" 
+                                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                                placeholder="https://www.youtube.com/watch?v=..."
+                            >
+                            <i class="fas fa-link absolute left-3 top-3.5 text-gray-400"></i>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Supports YouTube, Vimeo, and direct video URLs</p>
+                    </div>
+                    
+                    <!-- File Upload -->
+                    <div class="mb-6">
+                        <div class="relative">
+                            <input 
+                                type="file" 
+                                id="video-file" 
+                                accept="video/*" 
+                                class="hidden"
+                            >
+                            <label for="video-file" class="cursor-pointer">
+                                <div id="file-upload-area" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-indigo-500 hover:bg-indigo-50 transition-all duration-200">
+                                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                                    <p class="text-gray-600 font-medium">Click to upload video</p>
+                                    <p class="text-sm text-gray-500 mt-1">or drag and drop</p>
+                                    <p class="text-xs text-gray-400 mt-2">MP4, AVI, MOV, MKV (max 1GB)</p>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <!-- File Info Display -->
+                        <div id="file-info" class="hidden mt-4 p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900" id="file-name"></p>
+                                    <p class="text-xs text-gray-500" id="file-size"></p>
+                                    <p class="text-xs text-gray-400" id="uploaded-path"></p>
+                                </div>
+                                <button id="remove-file" class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Audio Conversion Options -->
+                    <div class="mb-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-sm font-semibold text-gray-900 flex items-center">
+                                <i class="fas fa-volume-up text-purple-600 mr-2"></i>Audio Conversion
+                            </h3>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="enable-audio-conversion" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                            </label>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-3">Convert video audio to text with advanced speech recognition</p>
+                        
+                        <div id="audio-conversion-options" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Audio Quality</label>
+                                <select id="audio-quality" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option value="high">High Quality (Slower)</option>
+                                    <option value="medium" selected>Medium Quality (Balanced)</option>
+                                    <option value="fast">Fast Processing (Lower Quality)</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Speaker Recognition</label>
+                                <select id="speaker-recognition" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option value="disabled" selected>Disabled</option>
+                                    <option value="auto">Auto-detect Speakers</option>
+                                    <option value="multiple">Multiple Speakers</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input type="checkbox" id="include-audio-timestamps" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500" checked>
+                                <label for="include-audio-timestamps" class="ml-2 text-xs text-gray-700">Include precise audio timestamps</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Options -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Summary Type
+                        </label>
+                        <select id="summary-type" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            <option value="educational">Educational Content</option>
+                            <option value="lecture">Lecture/Conference</option>
+                            <option value="presentation">Business Presentation</option>
+                            <option value="tutorial">Tutorial/How-to</option>
+                            <option value="news">News/Documentary</option>
+                            <option value="general">General Content</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Advanced Options -->
+                    <div class="mb-6">
+                        <button type="button" id="advanced-options-toggle" class="flex items-center text-sm text-indigo-600 hover:text-indigo-800">
+                            <i class="fas fa-cog mr-1"></i>Advanced Options
+                            <i class="fas fa-chevron-down ml-1 transition-transform" id="advanced-icon"></i>
+                        </button>
+                        
+                        <div id="advanced-options" class="hidden mt-4 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Summary Length
+                                </label>
+                                <select id="summary-length" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                    <option value="short">Short (1-2 paragraphs)</option>
+                                    <option value="medium" selected>Medium (3-5 paragraphs)</option>
+                                    <option value="long">Long (6+ paragraphs)</option>
+                                    <option value="bullet">Bullet Points</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Language
+                                </label>
+                                <select id="transcript-language" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                    <option value="auto" selected>Auto-detect</option>
+                                    <option value="en">English</option>
+                                    <option value="es">Spanish</option>
+                                    <option value="fr">French</option>
+                                    <option value="de">German</option>
+                                    <option value="it">Italian</option>
+                                    <option value="pt">Portuguese</option>
+                                    <option value="zh">Chinese</option>
+                                    <option value="ja">Japanese</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input type="checkbox" id="include-timestamps" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <label for="include-timestamps" class="ml-2 text-sm text-gray-700">
+                                    Include timestamps in transcript
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input type="checkbox" id="extract-keywords" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" checked>
+                                <label for="extract-keywords" class="ml-2 text-sm text-gray-700">
+                                    Extract keywords and topics
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Process Button -->
+                    <button 
+                        id="summarize-video-btn" 
+                        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-4 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium flex items-center justify-center"
+                    >
+                        <i class="fas fa-magic mr-2"></i>
+                        <span id="process-button-text">Summarize Video</span>
+                    </button>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <button id="load-sample-video" class="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="flex items-center">
+                                <i class="fas fa-play-circle text-indigo-600 mr-3"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Try Sample Video</p>
+                                    <p class="text-xs text-gray-500">Test with educational content</p>
+                                </div>
+                            </div>
+                        </button>
+                        
+                        <button id="clear-all" class="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="flex items-center">
+                                <i class="fas fa-broom text-gray-600 mr-3"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Clear All</p>
+                                    <p class="text-xs text-gray-500">Reset current session</p>
+                                </div>
+                            </div>
+                        </button>
+                        
+                        <button id="view-saved" class="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="flex items-center">
+                                <i class="fas fa-bookmark text-green-600 mr-3"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">View Saved</p>
+                                    <p class="text-xs text-gray-500">Access your library</p>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Panel - Results Section -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Processing Status -->
+                <div id="processing-status" class="hidden bg-white rounded-xl shadow-lg p-6">
+                    <div class="text-center">
+                        <div class="relative inline-block">
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <i class="fas fa-video text-indigo-600 text-xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mt-4">Processing Video</h3>
+                        <p class="text-gray-600 mt-2" id="processing-message">Analyzing video content...</p>
+                        <div class="mt-4">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div id="progress-bar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2" id="progress-text">0% Complete</p>
+                        </div>
+                        <div class="mt-4 flex justify-center space-x-4 text-sm text-gray-500">
+                            <span id="step-1" class="flex items-center">
+                                <i class="fas fa-circle text-xs mr-1"></i> Extracting Audio
+                            </span>
+                            <span id="step-2" class="flex items-center">
+                                <i class="fas fa-circle text-xs mr-1"></i> Converting Speech to Text
+                            </span>
+                            <span id="step-3" class="flex items-center">
+                                <i class="fas fa-circle text-xs mr-1"></i> Analyzing Content
+                            </span>
+                            <span id="step-4" class="flex items-center">
+                                <i class="fas fa-circle text-xs mr-1"></i> Generating Summary
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Card -->
+                <div id="results-card" class="hidden bg-white rounded-xl shadow-lg">
+                    <!-- Results Header -->
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+                                <i class="fas fa-file-alt text-indigo-600 mr-2"></i>Analysis Results
+                            </h2>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full" id="processing-time"></span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full" id="video-duration"></span>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-lg font-medium text-gray-900" id="video-title">Video Title</h3>
+                        <p class="text-sm text-gray-600 mt-1" id="video-description">Video Description</p>
+                    </div>
+                    
+                    <!-- Results Content -->
+                    <div class="p-6">
+                        <!-- Summary Section -->
+                        <div class="mb-8">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-lg font-semibold text-gray-900 flex items-center">
+                                    <i class="fas fa-robot text-indigo-600 mr-2"></i>AI Summary
+                                </h4>
+                                <div class="flex space-x-2">
+                                    <button id="copy-summary" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm flex items-center">
+                                        <i class="fas fa-copy mr-1"></i>Copy
+                                    </button>
+                                    <button id="regenerate-summary" class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center">
+                                        <i class="fas fa-sync-alt mr-1"></i>Regenerate
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4">
+                                <p id="summary-text" class="text-gray-700 leading-relaxed"></p>
+                            </div>
+                        </div>
+                        
+                        <!-- Key Points -->
+                        <div class="mb-8">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-key text-yellow-600 mr-2"></i>Key Points
+                            </h4>
+                            <ul id="key-points-list" class="space-y-3">
+                                <!-- Key points will be populated here -->
+                            </ul>
+                        </div>
+                        
+                        <!-- Keywords -->
+                        <div class="mb-8">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-tags text-green-600 mr-2"></i>Keywords & Topics
+                            </h4>
+                            <div id="keywords-container" class="flex flex-wrap gap-2">
+                                <!-- Keywords will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Audio Conversion Results -->
+                        <div id="audio-results" class="mb-8">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-lg font-semibold text-gray-900 flex items-center">
+                                    <i class="fas fa-volume-up text-purple-600 mr-2"></i>Audio to Text Conversion
+                                </h4>
+                                <div class="flex space-x-2">
+                                    <button id="download-audio-text" class="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 text-sm flex items-center">
+                                        <i class="fas fa-download mr-1"></i>Download Text
+                                    </button>
+                                    <button id="play-audio-preview" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm flex items-center">
+                                        <i class="fas fa-play mr-1"></i>Preview Audio
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Audio Processing Info -->
+                            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 mb-4">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                    <div class="text-center">
+                                        <div class="text-purple-600 font-semibold" id="audio-duration">--</div>
+                                        <div class="text-gray-600">Audio Duration</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-purple-600 font-semibold" id="speech-confidence">--</div>
+                                        <div class="text-gray-600">Confidence</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-purple-600 font-semibold" id="speaker-count">--</div>
+                                        <div class="text-gray-600">Speakers</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-purple-600 font-semibold" id="audio-language">--</div>
+                                        <div class="text-gray-600">Language</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Audio Text Content -->
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex space-x-4 text-sm text-gray-600">
+                                        <span id="audio-word-count">-- words</span>
+                                        <span id="audio-processing-time">-- processing time</span>
+                                    </div>
+                                    <button id="toggle-speaker-labels" class="text-sm text-purple-600 hover:text-purple-800">
+                                        <i class="fas fa-users mr-1"></i>Show Speakers
+                                    </button>
+                                </div>
+                                <div id="audio-text-container" class="max-h-64 overflow-y-auto">
+                                    <div id="audio-converted-text" class="text-gray-700 leading-relaxed whitespace-pre-wrap"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Full Transcript Section -->
+                        <div class="mb-8">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-lg font-semibold text-gray-900 flex items-center">
+                                    <i class="fas fa-align-left text-blue-600 mr-2"></i>Full Transcript
+                                </h4>
+                                <div class="flex space-x-2">
+                                    <button id="search-transcript" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm flex items-center">
+                                        <i class="fas fa-search mr-1"></i>Search
+                                    </button>
+                                    <button id="download-transcript" class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 text-sm flex items-center">
+                                        <i class="fas fa-download mr-1"></i>Download
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Transcript Search -->
+                            <div id="transcript-search" class="hidden mb-4">
+                                <div class="relative">
+                                    <input 
+                                        type="text" 
+                                        id="transcript-search-input" 
+                                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        placeholder="Search in transcript..."
+                                    >
+                                    <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                                </div>
+                                <div id="search-results" class="mt-2 text-sm text-gray-600"></div>
+                            </div>
+                            
+                            <!-- Transcript Content -->
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex space-x-4 text-sm text-gray-600">
+                                        <span id="transcript-stats"></span>
+                                        <span id="reading-time"></span>
+                                    </div>
+                                    <button id="toggle-timestamps" class="text-sm text-indigo-600 hover:text-indigo-800">
+                                        <i class="fas fa-clock mr-1"></i>Show Timestamps
+                                    </button>
+                                </div>
+                                <div id="transcript-container" class="max-h-96 overflow-y-auto">
+                                    <div id="full-transcript-text" class="text-gray-700 leading-relaxed whitespace-pre-wrap"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Timestamped Summary -->
+                        <div class="mb-8">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-list-ol text-purple-600 mr-2"></i>Timestamped Summary
+                            </h4>
+                            <div id="timestamped-summary" class="space-y-3">
+                                <!-- Timestamped segments will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="flex flex-wrap gap-3">
+                            <button id="save-to-library" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
+                                <i class="fas fa-save mr-2"></i>Save to Library
+                            </button>
+                            <button id="share-summary" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                                <i class="fas fa-share mr-2"></i>Share
+                            </button>
+                            <button id="export-all" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
+                                <i class="fas fa-file-export mr-2"></i>Export All
+                            </button>
+                            <button id="analyze-again" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center">
+                                <i class="fas fa-redo mr-2"></i>Analyze Another
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="empty-state" class="bg-white rounded-xl shadow-lg p-12 text-center">
+                    <div class="mb-6">
+                        <i class="fas fa-video text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Ready to Analyze Videos</h3>
+                        <p class="text-gray-600 mb-6 max-w-md mx-auto">
+                            Upload a video or paste a URL to get AI-powered summaries, full transcripts, 
+                            and key insights extracted from your educational content.
+                        </p>
+                        <div class="flex justify-center space-x-4 text-sm text-gray-500">
+                            <span class="flex items-center"><i class="fas fa-check text-green-500 mr-1"></i>Automatic Transcription</span>
+                            <span class="flex items-center"><i class="fas fa-check text-green-500 mr-1"></i>AI-Powered Summary</span>
+                            <span class="flex items-center"><i class="fas fa-check text-green-500 mr-1"></i>Keyword Extraction</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- History Section -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+                    <i class="fas fa-history text-indigo-600 mr-2"></i>Recent Analyses
+                </h2>
+                <div class="flex space-x-2">
+                    <button id="filter-history" class="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 flex items-center">
+                        <i class="fas fa-filter mr-1"></i>Filter
+                    </button>
+                    <button id="clear-history" class="px-3 py-1 text-sm text-red-600 hover:text-red-800 flex items-center">
+                        <i class="fas fa-trash mr-1"></i>Clear All
+                    </button>
+                </div>
+            </div>
+            <div id="summaries-history" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- History items will be populated here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Share Modal -->
+<div id="share-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Share Summary</h3>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Share Link</label>
+                <div class="flex">
+                    <input type="text" id="share-link" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-50" readonly>
+                    <button id="copy-share-link" class="px-4 py-2 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex space-x-3">
+                <button class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center">
+                    <i class="fas fa-envelope mr-2"></i>Email
+                </button>
+                <button class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center">
+                    <i class="fab fa-whatsapp mr-2"></i>WhatsApp
+                </button>
+            </div>
+        </div>
+        <div class="mt-6 flex justify-end">
+            <button id="close-share-modal" class="px-4 py-2 text-gray-600 hover:text-gray-800">Close</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Enhanced Video Summarizer with Full Content Extraction
+class EnhancedVideoSummarizer {
+    constructor() {
+        this.currentAnalysis = null;
+        this.summariesHistory = [];
+        this.transcriptTimestamps = true;
+        this.searchResults = [];
+        this.audioConversionEnabled = true;
+        this.speakerLabelsVisible = false;
+        this.audioData = null;
+        this.initializeEventListeners();
+        this.loadHistory();
+        this.checkAuthentication();
+    }
+    
+    checkAuthentication() {
+        fetch('/ai/video-summarizer', {
+            method: 'GET',
+            credentials: 'same-origin'
+        }).then(response => {
+            if (response.redirected || response.status === 401) {
+                this.showAuthenticationMessage();
+            }
+        }).catch(error => {
+            console.log('Authentication check failed:', error);
+        });
+    }
+    
+    showAuthenticationMessage() {
+        const summarizeBtn = document.getElementById('summarize-video-btn');
+        summarizeBtn.disabled = true;
+        summarizeBtn.innerHTML = '<i class="fas fa-lock mr-2"></i>Login Required';
+        summarizeBtn.className = 'w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white py-3 px-4 rounded-lg font-medium cursor-not-allowed';
+        
+        const authMessage = document.createElement('div');
+        authMessage.className = 'mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg';
+        authMessage.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                <div>
+                    <p class="text-yellow-800 font-medium">Authentication Required</p>
+                    <p class="text-yellow-700 text-sm">Please <a href="/auth/login" class="text-yellow-800 underline hover:text-yellow-900">log in</a> to use the Video Summarizer.</p>
+                </div>
+            </div>
+        `;
+        summarizeBtn.parentNode.insertBefore(authMessage, summarizeBtn.nextSibling);
+    }
+    
+    initializeEventListeners() {
+        // File upload
+        const videoFile = document.getElementById('video-file');
+        videoFile.addEventListener('change', (e) => this.handleFileSelect(e));
+        
+        // Remove file
+        document.getElementById('remove-file').addEventListener('click', () => this.removeFile());
+        
+        // Process button
+        document.getElementById('summarize-video-btn').addEventListener('click', () => this.processVideo());
+        
+        // Advanced options toggle
+        document.getElementById('advanced-options-toggle').addEventListener('click', () => this.toggleAdvancedOptions());
+        
+        // Action buttons
+        document.getElementById('copy-summary').addEventListener('click', () => this.copySummary());
+        document.getElementById('regenerate-summary').addEventListener('click', () => this.regenerateSummary());
+        document.getElementById('download-transcript').addEventListener('click', () => this.downloadTranscript());
+        document.getElementById('search-transcript').addEventListener('click', () => this.toggleTranscriptSearch());
+        document.getElementById('toggle-timestamps').addEventListener('click', () => this.toggleTimestamps());
+        document.getElementById('save-to-library').addEventListener('click', () => this.saveToLibrary());
+        document.getElementById('share-summary').addEventListener('click', () => this.showShareModal());
+        document.getElementById('export-all').addEventListener('click', () => this.exportAll());
+        document.getElementById('analyze-again').addEventListener('click', () => this.resetForNewAnalysis());
+        
+        // Audio conversion buttons
+        document.getElementById('download-audio-text').addEventListener('click', () => this.downloadAudioText());
+        document.getElementById('play-audio-preview').addEventListener('click', () => this.playAudioPreview());
+        document.getElementById('toggle-speaker-labels').addEventListener('click', () => this.toggleSpeakerLabels());
+        
+        // Audio conversion toggle
+        document.getElementById('enable-audio-conversion').addEventListener('change', () => this.toggleAudioConversion());
+        
+        // Quick actions
+        document.getElementById('load-sample-video').addEventListener('click', () => this.loadSampleVideo());
+        document.getElementById('clear-all').addEventListener('click', () => this.clearAll());
+        document.getElementById('view-saved').addEventListener('click', () => this.viewSavedAnalyses());
+        
+        // History actions
+        document.getElementById('filter-history').addEventListener('click', () => this.filterHistory());
+        document.getElementById('clear-history').addEventListener('click', () => this.clearHistory());
+        
+        // Transcript search
+        document.getElementById('transcript-search-input').addEventListener('input', (e) => this.searchTranscript(e.target.value));
+        
+        // Share modal
+        document.getElementById('close-share-modal').addEventListener('click', () => this.hideShareModal());
+        document.getElementById('copy-share-link').addEventListener('click', () => this.copyShareLink());
+        
+        // Drag and drop
+        this.setupDragAndDrop();
+        
+        // Clear URL when file is selected
+        document.getElementById('video-file').addEventListener('change', () => {
+            document.getElementById('video-url').value = '';
+        });
+        
+        // Clear file when URL is entered
+        document.getElementById('video-url').addEventListener('input', (e) => {
+            if (e.target.value.trim()) {
+                this.removeFile();
+            }
+        });
+    }
+    
+    setupDragAndDrop() {
+        const uploadArea = document.getElementById('file-upload-area');
+        const container = document.getElementById('file-upload-container');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            container.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            container.addEventListener(eventName, () => {
+                uploadArea.classList.add('border-indigo-500', 'bg-indigo-50');
+            });
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            container.addEventListener(eventName, () => {
+                uploadArea.classList.remove('border-indigo-500', 'bg-indigo-50');
+            });
+        });
+        
+        container.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                this.handleFileSelect({ target: { files: files } });
+            }
+        });
+    }
+    
+    toggleAdvancedOptions() {
+        const options = document.getElementById('advanced-options');
+        const icon = document.getElementById('advanced-icon');
+        const isHidden = options.classList.contains('hidden');
+        
+        if (isHidden) {
+            options.classList.remove('hidden');
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            options.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
+        }
+    }
+    
+    handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        // Validate file type
+        const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/mkv', 'video/webm'];
+        const allowedExtensions = ['mp4', 'avi', 'mov', 'mkv', 'webm'];
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        
+        if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+            this.showNotification('Please select a valid video file (MP4, AVI, MOV, MKV, WEBM).', 'error');
+            return;
+        }
+        
+        // Validate file size (1GB limit)
+        const maxSize = 1 * 1024 * 1024 * 1024; // 1GB in bytes
+        if (file.size > maxSize) {
+            this.showNotification('File size must be less than 1GB.', 'error');
+            return;
+        }
+        
+        this.selectedFile = file;
+        
+        // Show file info
+        document.getElementById('file-name').textContent = file.name;
+        document.getElementById('file-size').textContent = this.formatFileSize(file.size);
+        document.getElementById('file-info').classList.remove('hidden');
+        document.getElementById('file-upload-area').classList.add('hidden');
+        
+        // Clear URL input
+        document.getElementById('video-url').value = '';
+        
+        this.showNotification('Video file selected successfully', 'success');
+    }
+    
+    removeFile() {
+        this.selectedFile = null;
+        document.getElementById('video-file').value = '';
+        document.getElementById('file-info').classList.add('hidden');
+        document.getElementById('file-upload-area').classList.remove('hidden');
+    }
+    
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    async processVideo() {
+        const videoUrl = document.getElementById('video-url').value.trim();
+        const summaryType = document.getElementById('summary-type').value;
+        
+        if (!videoUrl && !this.selectedFile) {
+            this.showNotification('Please provide a video URL or upload a video file.', 'error');
+            return;
+        }
+        
+        // Get advanced options
+        const options = {
+            summaryLength: document.getElementById('summary-length').value,
+            language: document.getElementById('transcript-language').value,
+            includeTimestamps: document.getElementById('include-timestamps').checked,
+            extractKeywords: document.getElementById('extract-keywords').checked,
+            // Audio conversion options
+            enableAudioConversion: this.audioConversionEnabled,
+            audioQuality: document.getElementById('audio-quality').value,
+            speakerRecognition: document.getElementById('speaker-recognition').value,
+            includeAudioTimestamps: document.getElementById('include-audio-timestamps').checked
+        };
+        
+        this.showProcessingState();
+        this.updateProgress(0, 'Initializing video analysis...');
+        
+        try {
+            let response;
+            
+            if (videoUrl) {
+                response = await this.processVideoUrl(videoUrl, summaryType, options);
+            } else if (this.selectedFile) {
+                response = await this.processVideoFile(this.selectedFile, summaryType, options);
+            }
+            
+            if (response && response.ok) {
+                const data = await response.json();
+                this.displayResults(data);
+                this.addToHistory(data, videoUrl || this.selectedFile.name);
+                this.showNotification('Video analyzed successfully!', 'success');
+            } else {
+                // Try to get detailed error message from server
+                let errorMessage = 'Video processing failed';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorData.message || 'Video processing failed';
+                } catch (e) {
+                    // If we can't parse the error response, use status text
+                    errorMessage = response.statusText || 'Video processing failed';
+                }
+                throw new Error(errorMessage);
+            }
+            
+        } catch (error) {
+            console.error('Video processing error:', error);
+            
+            // Check if this is an authentication error
+            if (error.message && error.message.includes('Authentication Required')) {
+                this.showNotification('Please log in to process videos. Authentication required.', 'error');
+            } else {
+                const errorMessage = error.message || 'Failed to process video. Please try again.';
+                this.showNotification(errorMessage, 'error');
+            }
+            this.showEmptyState();
+        }
+    }
+    
+    async processVideoUrl(videoUrl, summaryType, options) {
+        this.updateProgress(25, 'Extracting video information...');
+        
+        // Simulate processing steps
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        this.updateProgress(50, 'Converting speech to text with advanced recognition...');
+        
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        this.updateProgress(75, 'Analyzing content and generating comprehensive summary...');
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        this.updateProgress(90, 'Finalizing results with audio transcription...');
+        
+        // Mock API call - replace with actual endpoint
+        return fetch('/ai/summarize-video', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.getCsrfToken()
+            },
+            body: JSON.stringify({
+                video_url: videoUrl,
+                summary_type: summaryType,
+                options: options
+            })
+        });
+    }
+    
+    async processVideoFile(videoFile, summaryType, options) {
+        this.updateProgress(25, 'Uploading and processing video...');
+        
+        const formData = new FormData();
+        formData.append('video', videoFile);
+        formData.append('summary_type', summaryType);
+        formData.append('options', JSON.stringify(options));
+        
+        // Mock processing steps
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        this.updateProgress(50, 'Converting speech to text with advanced recognition...');
+        
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        this.updateProgress(75, 'Analyzing content and generating comprehensive summary...');
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        this.updateProgress(90, 'Finalizing results with audio transcription...');
+        
+        // Mock API call - replace with actual endpoint
+        return fetch('/ai/summarize-video', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': this.getCsrfToken()
+            },
+            body: formData
+        });
+    }
+    
+    showProcessingState() {
+        document.getElementById('processing-status').classList.remove('hidden');
+        document.getElementById('results-card').classList.add('hidden');
+        document.getElementById('empty-state').classList.add('hidden');
+        document.getElementById('summarize-video-btn').disabled = true;
+    }
+    
+    updateProgress(percentage, message) {
+        document.getElementById('progress-bar').style.width = percentage + '%';
+        document.getElementById('progress-text').textContent = Math.round(percentage) + '% Complete';
+        document.getElementById('processing-message').textContent = message;
+        
+        // Update step indicators
+        const steps = ['step-1', 'step-2', 'step-3', 'step-4'];
+        const stepThresholds = [25, 50, 75, 90];
+        
+        steps.forEach((stepId, index) => {
+            const step = document.getElementById(stepId);
+            const icon = step.querySelector('i');
+            
+            if (percentage >= stepThresholds[index]) {
+                icon.className = 'fas fa-check-circle text-xs mr-1 text-green-500';
+            } else if (percentage >= stepThresholds[index] - 12.5) {
+                icon.className = 'fas fa-circle text-xs mr-1 text-indigo-500 animate-pulse';
+            } else {
+                icon.className = 'fas fa-circle text-xs mr-1 text-gray-400';
+            }
+        });
+    }
+    
+    displayResults(data) {
+        // Hide processing state
+        document.getElementById('processing-status').classList.add('hidden');
+        document.getElementById('results-card').classList.remove('hidden');
+        document.getElementById('summarize-video-btn').disabled = false;
+        
+        // Store current analysis
+        this.currentAnalysis = data;
+        
+        // Update header info
+        document.getElementById('video-title').textContent = data.summary.title || 'Video Analysis';
+        document.getElementById('video-description').textContent = data.summary.description || '';
+        document.getElementById('video-duration').textContent = data.summary.duration || '--';
+        document.getElementById('processing-time').textContent = data.processing_time || '--';
+        
+        // Update summary
+        document.getElementById('summary-text').textContent = data.summary.summary || '';
+        
+        // Update key points
+        const keyPointsList = document.getElementById('key-points-list');
+        if (data.summary.key_points && data.summary.key_points.length > 0) {
+            keyPointsList.innerHTML = data.summary.key_points.map(point => 
+                `<li class="flex items-start bg-gray-50 p-3 rounded-lg">
+                    <i class="fas fa-check-circle text-green-500 mr-3 mt-0.5"></i>
+                    <span class="text-gray-700">${point}</span>
+                </li>`
+            ).join('');
+        } else {
+            keyPointsList.innerHTML = '<li class="text-gray-500 text-center py-4">No key points extracted</li>';
+        }
+        
+        // Update keywords
+        const keywordsContainer = document.getElementById('keywords-container');
+        if (data.summary.keywords && data.summary.keywords.length > 0) {
+            keywordsContainer.innerHTML = data.summary.keywords.map(keyword =>
+                `<span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">${keyword}</span>`
+            ).join('');
+        } else {
+            keywordsContainer.innerHTML = '<span class="text-gray-500">No keywords extracted</span>';
+        }
+        
+        // Display audio conversion results if available
+        if (data.audio_conversion && this.audioConversionEnabled) {
+            this.displayAudioResults(data.audio_conversion);
+        }
+        
+        // Update transcript
+        this.displayTranscript(data.summary.transcript, data.summary.timestamps);
+        
+        // Update timestamped summary
+        this.displayTimestampedSummary(data.summary.segments);
+        
+        // Update transcript stats
+        this.updateTranscriptStats(data.summary.transcript);
+    }
+    
+    displayTranscript(transcript, timestamps) {
+        const transcriptText = document.getElementById('full-transcript-text');
+        
+        if (!transcript) {
+            transcriptText.textContent = 'No transcript available';
+            return;
+        }
+        
+        if (timestamps && this.transcriptTimestamps) {
+            // Format transcript with timestamps
+            let formattedTranscript = '';
+            timestamps.forEach(segment => {
+                formattedTranscript += `[${segment.time}] ${segment.text}\n\n`;
+            });
+            transcriptText.textContent = formattedTranscript.trim();
+        } else {
+            transcriptText.textContent = transcript;
+        }
+    }
+    
+    displayTimestampedSummary(segments) {
+        const container = document.getElementById('timestamped-summary');
+        
+        if (!segments || segments.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 text-center py-4">No timestamped summary available</p>';
+            return;
+        }
+        
+        container.innerHTML = segments.map(segment => `
+            <div class="border-l-4 border-indigo-500 pl-4 py-2">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-sm font-medium text-indigo-600">${segment.time}</span>
+                    <span class="text-xs text-gray-500">${segment.duration}</span>
+                </div>
+                <p class="text-gray-700 text-sm">${segment.summary}</p>
+            </div>
+        `).join('');
+    }
+    
+    updateTranscriptStats(transcript) {
+        if (!transcript) return;
+        
+        const wordCount = transcript.split(/\s+/).length;
+        const charCount = transcript.length;
+        const readingTime = Math.ceil(wordCount / 200); // Average reading speed: 200 words per minute
+        
+        document.getElementById('transcript-stats').textContent = `${wordCount} words, ${charCount} characters`;
+        document.getElementById('reading-time').textContent = `~${readingTime} min read`;
+    }
+    
+    toggleTimestamps() {
+        this.transcriptTimestamps = !this.transcriptTimestamps;
+        const button = document.getElementById('toggle-timestamps');
+        
+        if (this.transcriptTimestamps) {
+            button.innerHTML = '<i class="fas fa-clock mr-1"></i>Hide Timestamps';
+        } else {
+            button.innerHTML = '<i class="fas fa-clock mr-1"></i>Show Timestamps';
+        }
+        
+        if (this.currentAnalysis) {
+            this.displayTranscript(this.currentAnalysis.summary.transcript, this.currentAnalysis.summary.timestamps);
+        }
+    }
+    
+    searchTranscript(query) {
+        if (!query || !this.currentAnalysis || !this.currentAnalysis.summary.transcript) {
+            document.getElementById('search-results').textContent = '';
+            return;
+        }
+        
+        const transcript = this.currentAnalysis.summary.transcript.toLowerCase();
+        const searchQuery = query.toLowerCase();
+        const occurrences = (transcript.match(new RegExp(searchQuery, 'g')) || []).length;
+        
+        if (occurrences > 0) {
+            document.getElementById('search-results').textContent = `Found ${occurrences} occurrence${occurrences > 1 ? 's' : ''}`;
+            this.highlightSearchResults(searchQuery);
+        } else {
+            document.getElementById('search-results').textContent = 'No matches found';
+        }
+    }
+    
+    highlightSearchResults(query) {
+        const transcriptText = document.getElementById('full-transcript-text');
+        const originalText = this.currentAnalysis.summary.transcript;
+        const highlightedText = originalText.replace(new RegExp(query, 'gi'), match => 
+            `<mark class="bg-yellow-200">${match}</mark>`
+        );
+        transcriptText.innerHTML = highlightedText;
+    }
+    
+    toggleTranscriptSearch() {
+        const searchContainer = document.getElementById('transcript-search');
+        const isHidden = searchContainer.classList.contains('hidden');
+        
+        if (isHidden) {
+            searchContainer.classList.remove('hidden');
+            document.getElementById('transcript-search-input').focus();
+        } else {
+            searchContainer.classList.add('hidden');
+            document.getElementById('transcript-search-input').value = '';
+            this.searchTranscript('');
+        }
+    }
+    
+    copySummary() {
+        if (!this.currentAnalysis) return;
+        
+        const summary = this.currentAnalysis.summary;
+        const textToCopy = `Title: ${summary.title}
+
+Summary:
+${summary.summary}
+
+Key Points:
+${summary.key_points ? summary.key_points.join('\n') : 'N/A'}
+
+Keywords: ${summary.keywords ? summary.keywords.join(', ') : 'N/A'}
+
+Full Transcript:
+${summary.transcript || 'N/A'}`;
+        
+        this.copyToClipboard(textToCopy);
+    }
+    
+    copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                this.showNotification('Content copied to clipboard!', 'success');
+            }).catch(() => {
+                this.fallbackCopyText(text);
+            });
+        } else {
+            this.fallbackCopyText(text);
+        }
+    }
+    
+    fallbackCopyText(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            this.showNotification('Content copied to clipboard!', 'success');
+        } catch (err) {
+            prompt('Copy this text:', text);
+        }
+        
+        document.body.removeChild(textArea);
+    }
+    
+    downloadTranscript() {
+        if (!this.currentAnalysis || !this.currentAnalysis.summary.transcript) {
+            this.showNotification('No transcript available to download', 'error');
+            return;
+        }
+        
+        const transcript = this.currentAnalysis.summary.transcript;
+        const title = this.currentAnalysis.summary.title || 'video-transcript';
+        const blob = new Blob([transcript], { type: 'text/plain' });
+        
+        this.downloadFile(blob, `${title.replace(/\s+/g, '-')}-transcript.txt`);
+    }
+    
+    exportAll() {
+        if (!this.currentAnalysis) return;
+        
+        const analysis = this.currentAnalysis;
+        const exportData = {
+            title: analysis.summary.title,
+            description: analysis.summary.description,
+            duration: analysis.summary.duration,
+            processing_time: analysis.processing_time,
+            summary: analysis.summary.summary,
+            key_points: analysis.summary.key_points,
+            keywords: analysis.summary.keywords,
+            transcript: analysis.summary.transcript,
+            segments: analysis.summary.segments,
+            timestamps: analysis.summary.timestamps,
+            export_date: new Date().toISOString()
+        };
+        
+        const jsonString = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        
+        this.downloadFile(blob, `${analysis.summary.title.replace(/\s+/g, '-')}-analysis.json`);
+    }
+    
+    downloadFile(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        this.showNotification('File downloaded successfully!', 'success');
+    }
+    
+    showShareModal() {
+        if (!this.currentAnalysis) return;
+        
+        // Generate share link (mock)
+        const shareLink = `${window.location.origin}/shared/video-analysis/${Date.now()}`;
+        document.getElementById('share-link').value = shareLink;
+        document.getElementById('share-modal').classList.remove('hidden');
+    }
+    
+    hideShareModal() {
+        document.getElementById('share-modal').classList.add('hidden');
+    }
+    
+    copyShareLink() {
+        const shareLink = document.getElementById('share-link');
+        this.copyToClipboard(shareLink.value);
+    }
+    
+    saveToLibrary() {
+        if (!this.currentAnalysis) return;
+        
+        try {
+            let savedAnalyses = JSON.parse(localStorage.getItem('savedVideoAnalyses') || '[]');
+            
+            // Check if already saved
+            const existingIndex = savedAnalyses.findIndex(a => 
+                a.summary.title === this.currentAnalysis.summary.title
+            );
+            
+            if (existingIndex !== -1) {
+                this.showNotification('This analysis is already in your library!', 'info');
+                return;
+            }
+            
+            // Add to saved analyses
+            savedAnalyses.push({
+                ...this.currentAnalysis,
+                savedAt: new Date().toISOString()
+            });
+            
+            localStorage.setItem('savedVideoAnalyses', JSON.stringify(savedAnalyses));
+            this.showNotification('Analysis saved to your library!', 'success');
+            
+        } catch (error) {
+            console.error('Error saving analysis:', error);
+            this.showNotification('Failed to save analysis', 'error');
+        }
+    }
+    
+    loadSampleVideo() {
+        // Load a sample educational video URL
+        document.getElementById('video-url').value = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+        this.showNotification('Sample video URL loaded', 'info');
+    }
+    
+    clearAll() {
+        if (confirm('Are you sure you want to clear all current data?')) {
+            this.resetForNewAnalysis();
+            this.showNotification('All data cleared', 'info');
+        }
+    }
+    
+    resetForNewAnalysis() {
+        this.currentAnalysis = null;
+        document.getElementById('video-url').value = '';
+        this.removeFile();
+        this.showEmptyState();
+    }
+    
+    showEmptyState() {
+        document.getElementById('processing-status').classList.add('hidden');
+        document.getElementById('results-card').classList.add('hidden');
+        document.getElementById('empty-state').classList.remove('hidden');
+        document.getElementById('summarize-video-btn').disabled = false;
+    }
+    
+    viewSavedAnalyses() {
+        // Redirect to saved analyses page or show modal
+        this.showNotification('Saved analyses feature coming soon!', 'info');
+    }
+    
+    addToHistory(analysis, source) {
+        const historyEntry = {
+            id: Date.now(),
+            timestamp: new Date().toISOString(),
+            source: source,
+            title: analysis.summary.title,
+            duration: analysis.summary.duration,
+            processingTime: analysis.processing_time,
+            summary: analysis.summary.summary.substring(0, 200) + '...'
+        };
+        
+        this.summariesHistory.unshift(historyEntry);
+        if (this.summariesHistory.length > 12) {
+            this.summariesHistory = this.summariesHistory.slice(0, 12);
+        }
+        
+        this.updateHistoryDisplay();
+        this.saveHistory();
+    }
+    
+    updateHistoryDisplay() {
+        const historyContainer = document.getElementById('summaries-history');
+        
+        if (this.summariesHistory.length === 0) {
+            historyContainer.innerHTML = `
+                <div class="col-span-full text-center text-gray-500 py-8">
+                    <i class="fas fa-history text-3xl mb-2"></i>
+                    <p>No recent analyses</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const historyHtml = this.summariesHistory.map(item => `
+            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer" onclick="videoSummarizer.loadFromHistory(${item.id})">
+                <div class="flex items-center justify-between mb-2">
+                    <h5 class="text-sm font-medium text-gray-900 truncate flex-1">${item.title}</h5>
+                    <span class="text-xs text-gray-500 ml-2">${item.duration}</span>
+                </div>
+                <p class="text-xs text-gray-600 mb-2 line-clamp-2">${item.summary}</p>
+                <div class="flex justify-between items-center text-xs text-gray-500">
+                    <span>${new Date(item.timestamp).toLocaleDateString()}</span>
+                    <span>${item.processingTime}</span>
+                </div>
+            </div>
+        `).join('');
+        
+        historyContainer.innerHTML = historyHtml;
+    }
+    
+    loadFromHistory(historyId) {
+        const historyItem = this.summariesHistory.find(item => item.id === historyId);
+        if (historyItem) {
+            // Load the analysis from history (simplified version)
+            this.showNotification('Loading analysis from history...', 'info');
+        }
+    }
+    
+    filterHistory() {
+        this.showNotification('History filtering coming soon!', 'info');
+    }
+    
+    clearHistory() {
+        if (confirm('Are you sure you want to clear all history?')) {
+            this.summariesHistory = [];
+            this.updateHistoryDisplay();
+            this.saveHistory();
+            this.showNotification('History cleared', 'info');
+        }
+    }
+    
+    showNotification(message, type = 'info') {
+        // Simple notification system - can be enhanced with a proper toast library
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+            type === 'success' ? 'bg-green-500 text-white' :
+            type === 'error' ? 'bg-red-500 text-white' :
+            type === 'warning' ? 'bg-yellow-500 text-white' :
+            'bg-blue-500 text-white'
+        }`;
+        notification.innerHTML = `
+            <div class="flex items-center">
+                <span>${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+    
+    getCsrfToken() {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        return csrfToken ? csrfToken.content : '';
+    }
+    
+    saveHistory() {
+        localStorage.setItem('videoSummariesHistory', JSON.stringify(this.summariesHistory));
+    }
+    
+    loadHistory() {
+        const saved = localStorage.getItem('videoSummariesHistory');
+        if (saved) {
+            try {
+                this.summariesHistory = JSON.parse(saved);
+                this.updateHistoryDisplay();
+            } catch (error) {
+                console.error('Error loading history:', error);
+            }
+        }
+    }
+    
+    // Audio Conversion Methods
+    toggleAudioConversion() {
+        this.audioConversionEnabled = document.getElementById('enable-audio-conversion').checked;
+        const optionsDiv = document.getElementById('audio-conversion-options');
+        
+        if (this.audioConversionEnabled) {
+            optionsDiv.classList.remove('hidden');
+            this.showNotification('Audio conversion enabled', 'info');
+        } else {
+            optionsDiv.classList.add('hidden');
+            this.showNotification('Audio conversion disabled', 'info');
+        }
+    }
+    
+    displayAudioResults(audioData) {
+        // Show audio results section
+        document.getElementById('audio-results').classList.remove('hidden');
+        
+        // Update audio statistics
+        document.getElementById('audio-duration').textContent = audioData.duration || '--';
+        document.getElementById('speech-confidence').textContent = audioData.confidence ? `${audioData.confidence}%` : '--';
+        document.getElementById('speaker-count').textContent = audioData.speaker_count || '1';
+        document.getElementById('audio-language').textContent = audioData.language || 'Auto-detected';
+        
+        // Update audio text content
+        this.displayAudioText(audioData.text, audioData.speakers);
+        
+        // Update audio stats
+        this.updateAudioStats(audioData.text);
+        
+        // Store audio data
+        this.audioData = audioData;
+    }
+    
+    displayAudioText(text, speakers) {
+        const audioTextContainer = document.getElementById('audio-converted-text');
+        
+        if (!text) {
+            audioTextContainer.textContent = 'No audio text available';
+            return;
+        }
+        
+        if (speakers && this.speakerLabelsVisible) {
+            // Format text with speaker labels
+            let formattedText = '';
+            speakers.forEach(speaker => {
+                formattedText += `[${speaker.name}]: ${speaker.text}\n\n`;
+            });
+            audioTextContainer.textContent = formattedText.trim();
+        } else {
+            audioTextContainer.textContent = text;
+        }
+    }
+    
+    updateAudioStats(text) {
+        if (!text) return;
+        
+        const wordCount = text.split(/\s+/).length;
+        const processingTime = this.currentAnalysis?.processing_time || '--';
+        
+        document.getElementById('audio-word-count').textContent = `${wordCount} words`;
+        document.getElementById('audio-processing-time').textContent = `${processingTime} processing`;
+    }
+    
+    toggleSpeakerLabels() {
+        this.speakerLabelsVisible = !this.speakerLabelsVisible;
+        const button = document.getElementById('toggle-speaker-labels');
+        
+        if (this.speakerLabelsVisible) {
+            button.innerHTML = '<i class="fas fa-users mr-1"></i>Hide Speakers';
+        } else {
+            button.innerHTML = '<i class="fas fa-users mr-1"></i>Show Speakers';
+        }
+        
+        if (this.audioData) {
+            this.displayAudioText(this.audioData.text, this.audioData.speakers);
+        }
+    }
+    
+    downloadAudioText() {
+        if (!this.audioData || !this.audioData.text) {
+            this.showNotification('No audio text available to download', 'error');
+            return;
+        }
+        
+        const text = this.audioData.text;
+        const title = this.currentAnalysis?.summary?.title || 'audio-text';
+        const blob = new Blob([text], { type: 'text/plain' });
+        
+        this.downloadFile(blob, `${title.replace(/\s+/g, '-')}-audio-text.txt`);
+    }
+    
+    playAudioPreview() {
+        // Mock audio preview functionality
+        this.showNotification('Audio preview feature coming soon!', 'info');
+        
+        // In a real implementation, this would play a preview of the extracted audio
+        // const audio = new Audio(audioUrl);
+        // audio.play();
+    }
+}
+
+// Initialize enhanced video summarizer when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.videoSummarizer = new EnhancedVideoSummarizer();
+});
+</script>
+{% endblock %}

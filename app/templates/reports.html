@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - ActiScore{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2"><i class="fas fa-chart-line text-indigo-600 mr-3"></i>Reports</h1>
+        <p class="text-gray-600">Overview of your activity and content.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Content Summary</h2>
+            <canvas id="reports-content-chart" height="160"></canvas>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+            <div class="text-gray-600">Activity tracking will appear here.</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('reports-content-chart');
+    if (ctx && window.Chart) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Videos', 'Summaries', 'Papers'],
+                datasets: [{
+                    data: [5, 8, 3],
+                    backgroundColor: ['#6366F1', '#10B981', '#F59E0B']
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+    }
+});
+</script>
+{% endblock %}
+

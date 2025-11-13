@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_CONFIG=production
+      - DATABASE_URL=postgresql://actiscore:password@db:5432/actiscore
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=your-production-secret-key-here
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASSWORD=admin123
+    volumes:
+      - ./uploads:/app/uploads
+      - ./models:/app/models
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=actiscore
+      - POSTGRES_USER=actiscore
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  celery:
+    build: .
+    command: celery -A run.celery worker --loglevel=info
+    environment:
+      - FLASK_CONFIG=production
+      - DATABASE_URL=postgresql://actiscore:password@db:5432/actiscore
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./uploads:/app/uploads
+      - ./models:/app/models
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  celery-beat:
+    build: .
+    command: celery -A run.celery beat --loglevel=info
+    environment:
+      - FLASK_CONFIG=production
+      - DATABASE_URL=postgresql://actiscore:password@db:5432/actiscore
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./uploads:/app/uploads
+      - ./models:/app/models
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:

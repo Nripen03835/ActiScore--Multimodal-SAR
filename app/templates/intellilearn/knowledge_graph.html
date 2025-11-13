@@ -1,0 +1,427 @@
+{% extends "base.html" %}
+
+{% block title %}Knowledge Graph - ActiScore{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            <i class="fas fa-project-diagram text-indigo-600 mr-3"></i>Knowledge Graph
+        </h1>
+        <p class="text-gray-600">
+            Interactive visualization of knowledge relationships and concepts. Explore connections between AI, machine learning, and related topics.
+        </p>
+    </div>
+    
+    <!-- Search Section -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Explore Knowledge Graph</h2>
+        
+        <div class="flex space-x-4">
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Topic or Concept</label>
+                <input 
+                    type="text" 
+                    id="topic-input" 
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="Enter a topic (e.g., artificial intelligence, machine learning, etc.)"
+                    value="artificial intelligence"
+                >
+            </div>
+            <div class="flex items-end">
+                <button 
+                    id="explore-btn" 
+                    class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                >
+                    <i class="fas fa-search mr-2"></i>Explore
+                </button>
+            </div>
+        </div>
+        
+        <!-- Quick Topics -->
+        <div class="mt-4">
+            <p class="text-sm text-gray-600 mb-2">Quick topics:</p>
+            <div class="flex flex-wrap gap-2">
+                <button class="quick-topic px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors" data-topic="artificial intelligence">AI</button>
+                <button class="quick-topic px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors" data-topic="machine learning">Machine Learning</button>
+                <button class="quick-topic px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors" data-topic="deep learning">Deep Learning</button>
+                <button class="quick-topic px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors" data-topic="natural language processing">NLP</button>
+                <button class="quick-topic px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors" data-topic="computer vision">Computer Vision</button>
+                <button class="quick-topic px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors" data-topic="neural networks">Neural Networks</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Graph Container -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-gray-900">Knowledge Graph Visualization</h2>
+            <div class="flex space-x-2">
+                <button id="reset-graph" class="px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm">
+                    <i class="fas fa-redo mr-1"></i>Reset
+                </button>
+                <button id="export-graph" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm">
+                    <i class="fas fa-download mr-1"></i>Export
+                </button>
+            </div>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="loading-state" class="hidden">
+            <div class="text-center py-12">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                <p class="text-gray-600">Generating knowledge graph...</p>
+            </div>
+        </div>
+        
+        <!-- Graph Canvas -->
+        <div id="graph-container" class="border border-gray-200 rounded-lg" style="height: 600px;">
+            <div id="empty-state" class="flex items-center justify-center h-full text-gray-500">
+                <div class="text-center">
+                    <i class="fas fa-project-diagram text-4xl mb-4"></i>
+                    <p class="text-lg">Enter a topic above to generate a knowledge graph</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Graph Legend -->
+        <div id="graph-legend" class="mt-4 hidden">
+            <h4 class="text-sm font-medium text-gray-900 mb-2">Legend</h4>
+            <div class="flex flex-wrap gap-4 text-sm">
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-indigo-600 rounded-full mr-2"></div>
+                    <span>Main Topic</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-blue-500 rounded-full mr-2"></div>
+                    <span>Subtopic</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
+                    <span>Concept</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Graph Info -->
+    <div id="graph-info" class="bg-white rounded-lg shadow-lg p-6 hidden">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Graph Information</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-indigo-600" id="node-count">0</div>
+                <div class="text-sm text-gray-600">Nodes</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-blue-600" id="edge-count">0</div>
+                <div class="text-sm text-gray-600">Connections</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-green-600" id="last-updated">--</div>
+                <div class="text-sm text-gray-600">Last Updated</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Include vis.js for graph visualization -->
+<script src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
+<link href="https://unpkg.com/vis-network@9.1.2/dist/dist/vis-network.min.css" rel="stylesheet">
+
+<script>
+class KnowledgeGraph {
+    constructor() {
+        this.network = null;
+        this.currentData = null;
+        this.initializeEventListeners();
+    }
+    
+    initializeEventListeners() {
+        // Explore button
+        document.getElementById('explore-btn').addEventListener('click', () => {
+            const topic = document.getElementById('topic-input').value.trim();
+            if (topic) {
+                this.generateGraph(topic);
+            }
+        });
+        
+        // Quick topic buttons
+        document.querySelectorAll('.quick-topic').forEach(button => {
+            button.addEventListener('click', () => {
+                const topic = button.getAttribute('data-topic');
+                document.getElementById('topic-input').value = topic;
+                this.generateGraph(topic);
+            });
+        });
+        
+        // Reset button
+        document.getElementById('reset-graph').addEventListener('click', () => {
+            this.resetGraph();
+        });
+        
+        // Export button
+        document.getElementById('export-graph').addEventListener('click', () => {
+            this.exportGraph();
+        });
+        
+        // Enter key on input
+        document.getElementById('topic-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const topic = e.target.value.trim();
+                if (topic) {
+                    this.generateGraph(topic);
+                }
+            }
+        });
+    }
+    
+    async generateGraph(topic) {
+        this.showLoadingState();
+        
+        try {
+            const response = await fetch('/ai/get-knowledge-graph', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({ topic: topic }),
+                credentials: 'same-origin'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            }
+            
+            // Check if response is HTML (login page) instead of JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Authentication required. Please log in to use this feature.');
+            }
+            
+            const data = await response.json();
+            this.currentData = data;
+            this.renderGraph(data.graph_data);
+            this.updateGraphInfo(data);
+            
+            ActiScore.showNotification('Knowledge graph generated successfully!', 'success');
+            
+        } catch (error) {
+            console.error('Graph generation error:', error);
+            let errorMessage = 'Failed to generate knowledge graph. Please try again.';
+            
+            if (error.message.includes('fetch')) {
+                errorMessage = 'Network error: Unable to connect to the server.';
+            } else if (error.message.includes('JSON')) {
+                errorMessage = 'Server error: Invalid response from server.';
+            } else if (error.message) {
+                errorMessage = `Error: ${error.message}`;
+            }
+            
+            ActiScore.showNotification(errorMessage, 'error');
+            this.showEmptyState();
+        }
+    }
+    
+    renderGraph(graphData) {
+        if (!graphData || !graphData.nodes || !graphData.edges) {
+            throw new Error('Invalid graph data');
+        }
+        
+        // Create nodes dataset
+        const nodes = new vis.DataSet(graphData.nodes.map(node => ({
+            id: node.id,
+            label: node.label,
+            size: node.size || 10,
+            color: this.getNodeColor(node.type),
+            font: {
+                color: '#374151',
+                size: 14
+            },
+            borderWidth: 2,
+            borderWidthSelected: 3
+        })));
+        
+        // Create edges dataset
+        const edges = new vis.DataSet(graphData.edges.map(edge => ({
+            from: edge.from,
+            to: edge.to,
+            label: edge.label || '',
+            font: {
+                color: '#6B7280',
+                size: 12,
+                align: 'middle'
+            },
+            arrows: {
+                to: {
+                    enabled: true,
+                    scaleFactor: 0.5
+                }
+            },
+            color: {
+                color: '#9CA3AF',
+                highlight: '#6366F1'
+            }
+        })));
+        
+        // Create network
+        const container = document.getElementById('graph-container');
+        const data = { nodes: nodes, edges: edges };
+        
+        const options = {
+            physics: {
+                enabled: true,
+                barnesHut: {
+                    gravitationalConstant: -2000,
+                    centralGravity: 0.3,
+                    springLength: 95,
+                    springConstant: 0.04,
+                    damping: 0.09
+                }
+            },
+            interaction: {
+                hover: true,
+                tooltipDelay: 200,
+                hideEdgesOnDrag: true
+            },
+            layout: {
+                improvedLayout: true
+            },
+            nodes: {
+                shape: 'dot',
+                scaling: {
+                    min: 10,
+                    max: 30
+                }
+            }
+        };
+        
+        // Clear previous network if exists
+        if (this.network) {
+            this.network.destroy();
+        }
+        
+        this.network = new vis.Network(container, data, options);
+        
+        // Add event listeners
+        this.network.on('click', (params) => {
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                this.onNodeClick(nodeId);
+            }
+        });
+        
+        this.network.on('doubleClick', (params) => {
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                this.expandNode(nodeId);
+            }
+        });
+        
+        // Show legend and info
+        document.getElementById('graph-legend').classList.remove('hidden');
+        document.getElementById('graph-info').classList.remove('hidden');
+    }
+    
+    getNodeColor(type) {
+        const colors = {
+            'main': '#4F46E5',     // Indigo
+            'subtopic': '#3B82F6',  // Blue
+            'concept': '#10B981',   // Green
+            'default': '#6B7280'   // Gray
+        };
+        return colors[type] || colors['default'];
+    }
+    
+    onNodeClick(nodeId) {
+        // Get node data
+        const node = this.currentData.graph_data.nodes.find(n => n.id === nodeId);
+        if (node) {
+            console.log('Node clicked:', node);
+            // Could show node details in a sidebar or modal
+        }
+    }
+    
+    expandNode(nodeId) {
+        // In a real implementation, this could fetch more related nodes
+        console.log('Expanding node:', nodeId);
+        ActiScore.showNotification(`Expanding ${nodeId}...`, 'info');
+    }
+    
+    updateGraphInfo(data) {
+        document.getElementById('node-count').textContent = data.graph_data.nodes.length;
+        document.getElementById('edge-count').textContent = data.graph_data.edges.length;
+        document.getElementById('last-updated').textContent = data.metadata.last_updated || '--';
+    }
+    
+    showLoadingState() {
+        document.getElementById('loading-state').classList.remove('hidden');
+        document.getElementById('empty-state').classList.add('hidden');
+        if (this.network) {
+            this.network.destroy();
+            this.network = null;
+        }
+    }
+    
+    showEmptyState() {
+        document.getElementById('loading-state').classList.add('hidden');
+        document.getElementById('empty-state').classList.remove('hidden');
+        if (this.network) {
+            this.network.destroy();
+            this.network = null;
+        }
+    }
+    
+    resetGraph() {
+        if (this.network) {
+            this.network.fit();
+            ActiScore.showNotification('Graph reset to default view', 'success');
+        }
+    }
+    
+    exportGraph() {
+        if (!this.currentData) {
+            ActiScore.showNotification('No graph data to export', 'error');
+            return;
+        }
+        
+        try {
+            const exportData = {
+                topic: this.currentData.topic,
+                graph_data: this.currentData.graph_data,
+                metadata: this.currentData.metadata,
+                exported_at: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `knowledge-graph-${this.currentData.topic.replace(/\s+/g, '-')}-${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            ActiScore.showNotification('Graph exported successfully!', 'success');
+        } catch (error) {
+            console.error('Export error:', error);
+            ActiScore.showNotification('Failed to export graph', 'error');
+        }
+    }
+}
+
+// Initialize knowledge graph when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.knowledgeGraph = new KnowledgeGraph();
+});
+
+function getCsrfToken() {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    return csrfToken ? csrfToken.content : '';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,561 @@
+{% extends "base.html" %}
+
+{% block title %}Legal Document Summarizer - ActiScore{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            <i class="fas fa-file-contract text-indigo-600 mr-3"></i>Legal Document Summarizer
+        </h1>
+        <p class="text-gray-600">
+            AI-powered legal document analysis and summarization using advanced natural language processing.
+        </p>
+    </div>
+    
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Input Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Document Input</h2>
+            
+            <!-- Text Input Tab -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Or paste your text below:</label>
+                <textarea 
+                    id="text-input" 
+                    rows="12" 
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="Paste your legal document text here..."
+                ></textarea>
+            </div>
+            
+            <!-- File Upload -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Or upload a document:</label>
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-indigo-400 transition-colors">
+                    <input 
+                        type="file" 
+                        id="document-file" 
+                        accept=".txt,.pdf,.doc,.docx"
+                        class="hidden"
+                    >
+                    <div id="file-upload-area" class="cursor-pointer">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                        <p class="text-gray-600">Click to upload or drag and drop</p>
+                        <p class="text-sm text-gray-500">Supported formats: TXT, PDF, DOC, DOCX</p>
+                    </div>
+                    <div id="file-info" class="hidden mt-2">
+                        <p class="text-sm text-green-600 font-medium">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            <span id="file-name"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Summarize Button -->
+            <button 
+                id="summarize-btn" 
+                class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+            >
+                <i class="fas fa-magic mr-2"></i>Summarize Document
+            </button>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Summary Results</h2>
+            
+            <!-- Loading State -->
+            <div id="loading-state" class="hidden">
+                <div class="text-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                    <p class="text-gray-600">Analyzing document and generating summary...</p>
+                    <p class="text-sm text-gray-500 mt-2">This may take a few moments depending on document size.</p>
+                </div>
+            </div>
+            
+            <!-- Results -->
+            <div id="results-container" class="hidden">
+                <!-- Summary Stats -->
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-indigo-600" id="original-length">0</div>
+                        <div class="text-sm text-gray-600">Original Length</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-green-600" id="summary-length">0</div>
+                        <div class="text-sm text-gray-600">Summary Length</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-purple-600" id="compression-ratio">0%</div>
+                        <div class="text-sm text-gray-600">Compression</div>
+                    </div>
+                </div>
+                
+                <!-- Summary Text -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-3">Summary</h3>
+                    <div id="summary-text" class="bg-gray-50 rounded-lg p-4 text-gray-700 leading-relaxed">
+                        Summary will appear here...
+                    </div>
+                </div>
+                
+                <!-- Key Points -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-3">Key Points</h3>
+                    <div id="key-points" class="space-y-2">
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span class="text-gray-700">Key points will be extracted here...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex space-x-3">
+                    <button 
+                        id="copy-summary" 
+                        class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                        <i class="fas fa-copy mr-2"></i>Copy Summary
+                    </button>
+                    <button 
+                        id="save-summary" 
+                        class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                        <i class="fas fa-save mr-2"></i>Save Summary
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="empty-state" class="text-center py-12">
+                <i class="fas fa-file-alt text-4xl text-gray-300 mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No Summary Yet</h3>
+                <p class="text-gray-600">Upload a legal document or paste text to get started.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- History Section -->
+    <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-gray-900">Recent Summaries</h2>
+            <button id="clear-history" class="text-red-600 hover:text-red-800 text-sm">
+                <i class="fas fa-trash mr-1"></i>Clear History
+            </button>
+        </div>
+        <div id="summaries-history" class="space-y-3">
+            <div class="text-center text-gray-500 py-8">
+                <i class="fas fa-history text-2xl mb-2"></i>
+                <p>No summaries yet</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Legal Document Summarizer
+class LegalSummarizer {
+    constructor() {
+        this.currentSummary = null;
+        this.summariesHistory = [];
+        this.initializeEventListeners();
+        this.loadHistory();
+        this.checkAuthentication();
+    }
+    
+    checkAuthentication() {
+        // Check if user is authenticated by making a test request
+        fetch('/ai/summarize-legal-document', {
+            method: 'HEAD',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            }
+        }).then(response => {
+            if (response.redirected || response.status === 401) {
+                this.showAuthenticationMessage();
+            }
+        }).catch(error => {
+            console.log('Authentication check failed:', error);
+        });
+    }
+    
+    showAuthenticationMessage() {
+        const summarizeBtn = document.getElementById('summarize-btn');
+        summarizeBtn.disabled = true;
+        summarizeBtn.innerHTML = '<i class="fas fa-lock mr-2"></i>Login Required';
+        summarizeBtn.className = 'w-full bg-gray-400 text-white py-3 px-4 rounded-lg font-medium cursor-not-allowed';
+        
+        // Add authentication message
+        const authMessage = document.createElement('div');
+        authMessage.className = 'mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg';
+        authMessage.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                <div>
+                    <p class="text-yellow-800 font-medium">Authentication Required</p>
+                    <p class="text-yellow-700 text-sm">Please <a href="/login" class="text-yellow-800 underline hover:text-yellow-900">log in</a> to use the Legal Document Summarizer.</p>
+                </div>
+            </div>
+        `;
+        summarizeBtn.parentNode.insertBefore(authMessage, summarizeBtn.nextSibling);
+    }
+    
+    initializeEventListeners() {
+        // Summarize button
+        document.getElementById('summarize-btn').addEventListener('click', () => this.summarizeDocument());
+        
+        // File upload
+        const fileInput = document.getElementById('document-file');
+        const uploadArea = document.getElementById('file-upload-area');
+        
+        uploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
+        
+        // Drag and drop
+        const uploadContainer = uploadArea.parentElement;
+        uploadContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadContainer.classList.add('border-indigo-400');
+        });
+        
+        uploadContainer.addEventListener('dragleave', () => {
+            uploadContainer.classList.remove('border-indigo-400');
+        });
+        
+        uploadContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadContainer.classList.remove('border-indigo-400');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                this.handleFileUpload({ target: { files: files } });
+            }
+        });
+        
+        // Action buttons
+        document.getElementById('copy-summary').addEventListener('click', () => this.copySummary());
+        document.getElementById('save-summary').addEventListener('click', () => this.saveSummary());
+        document.getElementById('clear-history').addEventListener('click', () => this.clearHistory());
+    }
+    
+    async handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        // Validate file type
+        const allowedTypes = ['text/plain', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        if (!allowedTypes.includes(file.type) && !file.name.match(/\.(txt|pdf|doc|docx)$/i)) {
+            ActiScore.showNotification('Invalid file type. Please upload TXT, PDF, DOC, or DOCX files.', 'error');
+            return;
+        }
+        
+        // Show file info
+        document.getElementById('file-name').textContent = file.name;
+        document.getElementById('file-info').classList.remove('hidden');
+        
+        // Read file content
+        try {
+            let content = '';
+            if (file.type === 'text/plain') {
+                content = await file.text();
+            } else {
+                // For PDF and DOC files, show a message that they need to be processed
+                content = `[File: ${file.name}]\n\nNote: PDF and Word document processing would require additional libraries. For now, please copy and paste the text content directly.`;
+            }
+            
+            // Fill the text area with file content
+            document.getElementById('text-input').value = content;
+            ActiScore.showNotification('File uploaded successfully', 'success');
+            
+        } catch (error) {
+            console.error('Error reading file:', error);
+            ActiScore.showNotification('Error reading file. Please try again.', 'error');
+        }
+    }
+    
+    async summarizeDocument() {
+        const textInput = document.getElementById('text-input').value.trim();
+        const fileInput = document.getElementById('document-file').files[0];
+        
+        if (!textInput && !fileInput) {
+            ActiScore.showNotification('Please provide text input or upload a document.', 'error');
+            return;
+        }
+        
+        // Show loading state
+        this.showLoadingState();
+        
+        try {
+            // Create form data
+            const formData = new FormData();
+            if (textInput) {
+                formData.append('text_input', textInput);
+            } else if (fileInput) {
+                formData.append('document', fileInput);
+            }
+            
+            // Make API request
+            const response = await fetch('/ai/summarize-legal-document', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCsrfToken()
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            }
+            
+            // Check if response is HTML (login page) instead of JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Authentication required. Please log in to use this feature.');
+            }
+            
+            const data = await response.json();
+            this.displayResults(data);
+            this.currentSummary = data;
+            
+            ActiScore.showNotification('Document summarized successfully!', 'success');
+            
+        } catch (error) {
+            console.error('Summarization error:', error);
+            let errorMessage = 'Failed to summarize document. Please try again.';
+            
+            // Provide more specific error messages
+            if (error.message.includes('fetch')) {
+                errorMessage = 'Network error: Unable to connect to the server.';
+            } else if (error.message.includes('JSON')) {
+                errorMessage = 'Server error: Invalid response from server.';
+            } else if (error.message) {
+                errorMessage = `Error: ${error.message}`;
+            }
+            
+            ActiScore.showNotification(errorMessage, 'error');
+            this.showEmptyState();
+        }
+    }
+    
+    showLoadingState() {
+        document.getElementById('loading-state').classList.remove('hidden');
+        document.getElementById('results-container').classList.add('hidden');
+        document.getElementById('empty-state').classList.add('hidden');
+    }
+    
+    showEmptyState() {
+        document.getElementById('loading-state').classList.add('hidden');
+        document.getElementById('results-container').classList.add('hidden');
+        document.getElementById('empty-state').classList.remove('hidden');
+    }
+    
+    displayResults(data) {
+        // Hide loading state
+        document.getElementById('loading-state').classList.add('hidden');
+        document.getElementById('empty-state').classList.add('hidden');
+        document.getElementById('results-container').classList.remove('hidden');
+        
+        // Update stats
+        document.getElementById('original-length').textContent = data.original_length;
+        document.getElementById('summary-length').textContent = data.summary_length;
+        const compressionRatio = Math.round(((data.original_length - data.summary_length) / data.original_length) * 100);
+        document.getElementById('compression-ratio').textContent = compressionRatio + '%';
+        
+        // Update summary text
+        document.getElementById('summary-text').textContent = data.summary;
+        
+        // Generate key points (simple extraction of sentences with important keywords)
+        const keyPoints = this.extractKeyPoints(data.summary);
+        const keyPointsHtml = keyPoints.map(point => `
+            <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                <span class="text-gray-700">${point}</span>
+            </div>
+        `).join('');
+        document.getElementById('key-points').innerHTML = keyPointsHtml;
+        
+        // Add to history
+        this.addToHistory(data);
+    }
+    
+    extractKeyPoints(summary) {
+        const sentences = summary.split(/[.!?]+/).filter(s => s.trim().length > 0);
+        const keywords = ['legal', 'law', 'contract', 'agreement', 'party', 'obligation', 'right', 'responsibility', 'term', 'condition'];
+        
+        const keyPoints = sentences
+            .filter(sentence => 
+                keywords.some(keyword => 
+                    sentence.toLowerCase().includes(keyword)
+                )
+            )
+            .slice(0, 3) // Take first 3 relevant sentences
+            .map(s => s.trim());
+        
+        return keyPoints.length > 0 ? keyPoints : ['Key points extracted from the legal document.'];
+    }
+    
+    copySummary() {
+        if (!this.currentSummary) return;
+        
+        const summaryText = this.currentSummary.summary;
+        navigator.clipboard.writeText(summaryText).then(() => {
+            ActiScore.showNotification('Summary copied to clipboard!', 'success');
+        }).catch(() => {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = summaryText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            ActiScore.showNotification('Summary copied to clipboard!', 'success');
+        });
+    }
+    
+    saveSummary() {
+        if (!this.currentSummary) return;
+        
+        // Create a text file with the summary
+        const summaryContent = `Legal Document Summary\n\n` +
+            `Original Length: ${this.currentSummary.original_length} characters\n` +
+            `Summary Length: ${this.currentSummary.summary_length} characters\n` +
+            `Compression Ratio: ${Math.round(((this.currentSummary.original_length - this.currentSummary.summary_length) / this.currentSummary.original_length) * 100)}%\n\n` +
+            `Summary:\n${this.currentSummary.summary}`;
+        
+        const blob = new Blob([summaryContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `legal_summary_${new Date().toISOString().slice(0, 10)}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        ActiScore.showNotification('Summary saved successfully!', 'success');
+    }
+    
+    addToHistory(data) {
+        const summary = {
+            id: data.summary_id || Date.now(),
+            timestamp: new Date().toISOString(),
+            original_length: data.original_length,
+            summary_length: data.summary_length,
+            summary: data.summary,
+            compression_ratio: Math.round(((data.original_length - data.summary_length) / data.original_length) * 100)
+        };
+        
+        this.summariesHistory.unshift(summary);
+        if (this.summariesHistory.length > 10) {
+            this.summariesHistory = this.summariesHistory.slice(0, 10);
+        }
+        
+        this.updateHistoryDisplay();
+        this.saveHistory();
+    }
+    
+    updateHistoryDisplay() {
+        const historyContainer = document.getElementById('summaries-history');
+        
+        if (this.summariesHistory.length === 0) {
+            historyContainer.innerHTML = `
+                <div class="text-center text-gray-500 py-8">
+                    <i class="fas fa-history text-2xl mb-2"></i>
+                    <p>No summaries yet</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const historyHtml = this.summariesHistory.map((summary, index) => `
+            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer" onclick="legalSummarizer.loadSummary(${index})">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-sm font-medium text-gray-900">
+                        ${new Date(summary.timestamp).toLocaleDateString()}
+                    </span>
+                    <span class="text-xs text-gray-500">
+                        ${summary.compression_ratio}% compression
+                    </span>
+                </div>
+                <div class="grid grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-600">Original:</span>
+                        <span class="font-medium">${summary.original_length}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Summary:</span>
+                        <span class="font-medium">${summary.summary_length}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Saved:</span>
+                        <span class="font-medium">${new Date(summary.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                </div>
+                <div class="mt-2 text-xs text-gray-500 truncate">
+                    ${summary.summary.substring(0, 100)}...
+                </div>
+            </div>
+        `).join('');
+        
+        historyContainer.innerHTML = historyHtml;
+    }
+    
+    loadSummary(index) {
+        const summary = this.summariesHistory[index];
+        if (summary) {
+            this.currentSummary = summary;
+            this.displayResults({
+                summary: summary.summary,
+                original_length: summary.original_length,
+                summary_length: summary.summary_length
+            });
+            ActiScore.showNotification('Summary loaded from history', 'info');
+        }
+    }
+    
+    clearHistory() {
+        if (confirm('Are you sure you want to clear all summary history?')) {
+            this.summariesHistory = [];
+            this.updateHistoryDisplay();
+            this.saveHistory();
+            ActiScore.showNotification('History cleared', 'info');
+        }
+    }
+    
+    saveHistory() {
+        localStorage.setItem('legalSummariesHistory', JSON.stringify(this.summariesHistory));
+    }
+    
+    loadHistory() {
+        const saved = localStorage.getItem('legalSummariesHistory');
+        if (saved) {
+            try {
+                this.summariesHistory = JSON.parse(saved);
+                this.updateHistoryDisplay();
+            } catch (error) {
+                console.error('Error loading history:', error);
+            }
+        }
+    }
+}
+
+// Initialize legal summarizer when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.legalSummarizer = new LegalSummarizer();
+});
+
+function getCsrfToken() {
+    // In a real implementation, you'd get this from a meta tag or cookie
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    return csrfToken ? csrfToken.content : '';
+}
+</script>
+{% endblock %}

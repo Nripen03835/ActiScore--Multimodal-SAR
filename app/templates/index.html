@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}ActiScore - AI-Powered Emotion Analysis & Learning Tools{% endblock %}
+
+{% block content %}
+<!-- Hero Section with 3D Animation -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
+    <!-- 3D Canvas Background -->
+    <div id="hero-canvas" class="absolute inset-0 z-0"></div>
+    
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/80 via-purple-900/70 to-pink-900/60 z-10"></div>
+    
+    <!-- Hero Content -->
+    <div class="relative z-20 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <h1 class="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6 animate-fade-in">
+            <span class="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                ActiScore
+            </span>
+            <br>
+            <span class="text-2xl sm:text-3xl lg:text-4xl font-light">
+                AI-Powered Emotion Analysis & Learning
+            </span>
+        </h1>
+        
+        <p class="text-lg sm:text-xl lg:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto leading-relaxed">
+            Experience the future of emotion analysis with our cutting-edge multimodal AI platform. 
+            Analyze facial expressions, speech patterns, and create intelligent learning experiences.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="{{ url_for('auth.register') }}" 
+               class="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <i class="fas fa-rocket mr-2"></i>Get Started
+            </a>
+            <a href="#features" 
+               class="border-2 border-white text-white hover:bg-white hover:text-gray-900 px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300">
+                <i class="fas fa-play mr-2"></i>Explore Demo
+            </a>
+        </div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce z-20">
+        <i class="fas fa-chevron-down text-2xl"></i>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                Powerful AI Features
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Discover our comprehensive suite of AI-powered tools designed to enhance your learning and analysis capabilities.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Multimodal Emotion Analysis -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-smile text-white text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Multimodal Emotion Analysis</h3>
+                <p class="text-gray-600 mb-4">Analyze facial expressions and speech patterns to understand emotions in videos and real-time.</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Facial emotion recognition</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Speech emotion analysis</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Real-time processing</li>
+                </ul>
+            </div>
+            
+            <!-- Legal Document Summarizer -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-file-contract text-white text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Legal Document Summarizer</h3>
+                <p class="text-gray-600 mb-4">Automatically summarize and extract key information from legal documents and contracts.</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>AI-powered summarization</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Key point extraction</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Question answering</li>
+                </ul>
+            </div>
+            
+            <!-- Research Paper Recommender -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-graduation-cap text-white text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Research Paper Recommender</h3>
+                <p class="text-gray-600 mb-4">Discover relevant research papers and get intelligent recommendations based on your interests.</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Smart recommendations</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Semantic search</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Paper summarization</li>
+                </ul>
+            </div>
+            
+            <!-- Video Summarizer -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-video text-white text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Video Summarizer</h3>
+                <p class="text-gray-600 mb-4">Automatically generate concise summaries of educational videos and lectures.</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Automatic transcription</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Key point extraction</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Timeline generation</li>
+                </ul>
+            </div>
+            
+            <!-- Startup Success Predictor -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-rocket text-white text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Startup Success Predictor</h3>
+                <p class="text-gray-600 mb-4">Analyze startup characteristics and predict success probability using machine learning.</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Success probability scoring</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Risk assessment</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Recommendation engine</li>
+                </ul>
+            </div>
+            
+            <!-- Knowledge Graph -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-project-diagram text-white text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Knowledge Graph</h3>
+                <p class="text-gray-600 mb-4">Visualize and explore relationships between research concepts and topics.</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Interactive visualization</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Relationship mapping</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Knowledge discovery</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-r from-indigo-600 to-purple-600">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Ready to Experience AI-Powered Analysis?
+        </h2>
+        <p class="text-xl text-indigo-100 mb-8">
+            Join thousands of users who are already leveraging our advanced AI tools for emotion analysis and intelligent learning.
+        </p>
+        <a href="{{ url_for('auth.register') }}" 
+           class="bg-white text-indigo-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+            Start Your Free Trial
+        </a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/hero-3d.js') }}"></script>
+{% endblock %}

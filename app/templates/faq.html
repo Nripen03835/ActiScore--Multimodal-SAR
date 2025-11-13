@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ - IntelliLearn{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Find answers to common questions about IntelliLearn platform and its features.
+            </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="space-y-6">
+                <!-- General Questions -->
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">General Questions</h2>
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-200 pb-4">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">What is IntelliLearn?</h3>
+                            <p class="text-gray-600">IntelliLearn is an AI-powered educational platform that provides advanced tools for content analysis, summarization, and learning assistance.</p>
+                        </div>
+                        
+                        <div class="border-b border-gray-200 pb-4">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">How do I get started?</h3>
+                            <p class="text-gray-600">Simply create an account, log in, and explore our various AI modules including video summarization, document analysis, and research tools.</p>
+                        </div>
+                        
+                        <div class="border-b border-gray-200 pb-4">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Is IntelliLearn free to use?</h3>
+                            <p class="text-gray-600">We offer both free and premium plans. The free plan includes basic features, while premium plans provide access to advanced AI capabilities.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technical Questions -->
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">Technical Questions</h2>
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-200 pb-4">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">What file formats are supported?</h3>
+                            <p class="text-gray-600">We support various formats including PDF, TXT, DOCX for documents; MP4, AVI, MOV for videos; and WAV, MP3, FLAC for audio files.</p>
+                        </div>
+                        
+                        <div class="border-b border-gray-200 pb-4">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Is there a file size limit?</h3>
+                            <p class="text-gray-600">Yes, the maximum file size is 16MB for optimal processing performance.</p>
+                        </div>
+                        
+                        <div class="border-b border-gray-200 pb-4">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">How accurate are the AI summaries?</h3>
+                            <p class="text-gray-600">Our AI models are trained on extensive datasets and provide highly accurate summaries. However, we always recommend reviewing the results for critical applications.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Questions -->
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">Support Questions</h2>
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-200 pb-4">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">How do I contact support?</h3>
+                            <p class="text-gray-600">You can contact our support team through the <a href="{{ url_for('main.contact') }}" class="text-blue-600 hover:text-blue-800">Contact Us</a> page. We typically respond within 24 hours.</p>
+                        </div>
+                        
+                        <div class="border-b border-gray-200 pb-4">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">What should I do if I encounter an error?</h3>
+                            <p class="text-gray-600">If you encounter any errors, please contact our support team with details about the issue, including any error messages and the steps that led to the problem.</p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Can I suggest new features?</h3>
+                            <p class="text-gray-600">Absolutely! We welcome feature suggestions. Please use the contact form to share your ideas with our development team.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-center">
+                <p class="text-gray-600">
+                    Can't find what you're looking for? 
+                    <a href="{{ url_for('main.contact') }}" class="text-blue-600 hover:text-blue-800 font-medium">Contact our support team</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

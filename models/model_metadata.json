@@ -1,0 +1,59 @@
+{
+  "models": {
+    "fer": {
+      "path": "models/fer_model.pkl",
+      "type": "facial_emotion_recognition",
+      "accuracy": 0.75,
+      "input_shape": "(48, 48, 1)",
+      "emotions": [
+        "angry",
+        "disgust",
+        "fear",
+        "happy",
+        "sad",
+        "surprise",
+        "neutral"
+      ]
+    },
+    "ser": {
+      "path": "models/ser_model.pkl",
+      "type": "speech_emotion_recognition",
+      "accuracy": 0.68,
+      "feature_dim": 47,
+      "emotions": [
+        "neutral",
+        "calm",
+        "happy",
+        "sad",
+        "angry",
+        "fearful",
+        "disgust",
+        "surprised"
+      ]
+    },
+    "fusion": {
+      "path": "models/fusion_model.pkl",
+      "type": "multimodal_fusion",
+      "accuracy": 0.82,
+      "input_features": 6,
+      "emotions": [
+        "angry",
+        "disgust",
+        "fear",
+        "happy",
+        "sad",
+        "surprise",
+        "neutral"
+      ]
+    }
+  },
+  "preprocessing": {
+    "scaler": {
+      "path": "models/feature_scaler_efficient.pkl",
+      "type": "standard_scaler",
+      "feature_dim": 47
+    }
+  },
+  "created_at": "2025-11-12T16:22:40.553711",
+  "version": "1.0.0"
+}

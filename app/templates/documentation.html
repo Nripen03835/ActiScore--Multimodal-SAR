@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation - ActiScore{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            <i class="fas fa-book text-indigo-600 mr-3"></i>Documentation
+        </h1>
+        <p class="text-gray-600">
+            Complete guide to using ActiScore's AI-powered features and tools.
+        </p>
+    </div>
+    
+    <!-- Documentation Navigation -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Getting Started -->
+            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="flex items-center mb-3">
+                    <i class="fas fa-play-circle text-indigo-600 text-xl mr-2"></i>
+                    <h3 class="text-lg font-semibold text-gray-900">Getting Started</h3>
+                </div>
+                <p class="text-gray-600 text-sm mb-3">Learn the basics of ActiScore and how to get up and running quickly.</p>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li><i class="fas fa-check text-green-500 mr-1"></i>Account setup</li>
+                    <li><i class="fas fa-check text-green-500 mr-1"></i>Platform overview</li>
+                    <li><i class="fas fa-check text-green-500 mr-1"></i>First steps</li>
+                </ul>
+            </div>
+            
+            <!-- AI Features -->
+            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="flex items-center mb-3">
+                    <i class="fas fa-robot text-indigo-600 text-xl mr-2"></i>
+                    <h3 class="text-lg font-semibold text-gray-900">AI Features</h3>
+                </div>
+                <p class="text-gray-600 text-sm mb-3">Detailed guides for each AI-powered feature.</p>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li><i class="fas fa-check text-green-500 mr-1"></i>Emotion Analysis</li>
+                    <li><i class="fas fa-check text-green-500 mr-1"></i>Document Summarization</li>
+                    <li><i class="fas fa-check text-green-500 mr-1"></i>Video Processing</li>
+                </ul>
+            </div>
+            
+            <!-- API Integration -->
+            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="flex items-center mb-3">
+                    <i class="fas fa-code text-indigo-600 text-xl mr-2"></i>
+                    <h3 class="text-lg font-semibold text-gray-900">API Integration</h3>
+                </div>
+                <p class="text-gray-600 text-sm mb-3">Integrate ActiScore features into your applications.</p>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li><i class="fas fa-check text-green-500 mr-1"></i>API authentication</li>
+                    <li><i class="fas fa-check text-green-500 mr-1"></i>Endpoint reference</li>
+                    <li><i class="fas fa-check text-green-500 mr-1"></i>Code examples</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Start Guide -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">Quick Start Guide</h2>
+        <div class="space-y-6">
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-semibold">1</div>
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Create an Account</h3>
+                    <p class="text-gray-600">Sign up for a free ActiScore account to access all features.</p>
+                    <a href="{{ url_for('auth.register') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors mt-2">
+                        <i class="fas fa-user-plus mr-2"></i>Sign Up
+                    </a>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-semibold">2</div>
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Explore AI Features</h3>
+                    <p class="text-gray-600">Navigate through our AI-powered tools from the dashboard.</p>
+                    <a href="{{ url_for('main.dashboard') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors mt-2">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Go to Dashboard
+                    </a>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-semibold">3</div>
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Start Using AI Tools</h3>
+                    <p class="text-gray-600">Choose a feature and start processing your data with AI.</p>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <a href="{{ url_for('actiscore.multimodal_emotion') }}" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                            <i class="fas fa-smile mr-1"></i>Emotion Analysis
+                        </a>
+                        <a href="{{ url_for('intellilearn.legal_summarizer') }}" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                            <i class="fas fa-file-alt mr-1"></i>Document Summary
+                        </a>
+                        <a href="{{ url_for('intellilearn.video_summarizer') }}" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                            <i class="fas fa-video mr-1"></i>Video Summary
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Feature Documentation -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Emotion Analysis -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-smile text-indigo-600 text-2xl mr-3"></i>
+                <h3 class="text-xl font-semibold text-gray-900">Emotion Analysis</h3>
+            </div>
+            <p class="text-gray-600 mb-4">Analyze emotions from facial expressions and speech patterns in videos.</p>
+            <div class="space-y-3">
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-medium text-gray-900">Supported Formats</h4>
+                    <p class="text-sm text-gray-600">MP4, AVI, MOV, MKV, WEBM (max 500MB)</p>
+                </div>
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-medium text-gray-900">Emotions Detected</h4>
+                    <p class="text-sm text-gray-600">Happy, Sad, Angry, Surprised, Fearful, Disgusted, Neutral</p>
+                </div>
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-medium text-gray-900">Output</h4>
+                    <p class="text-sm text-gray-600">Emotion timeline, dominant emotion, confidence scores</p>
+                </div>
+            </div>
+            <a href="{{ url_for('actiscore.multimodal_emotion') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors mt-4">
+                <i class="fas fa-play mr-2"></i>Try Emotion Analysis
+            </a>
+        </div>
+        
+        <!-- Document Summarization -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-file-alt text-indigo-600 text-2xl mr-3"></i>
+                <h3 class="text-xl font-semibold text-gray-900">Document Summarization</h3>
+            </div>
+            <p class="text-gray-600 mb-4">Generate concise summaries of legal documents and text files.</p>
+            <div class="space-y-3">
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-medium text-gray-900">Supported Formats</h4>
+                    <p class="text-sm text-gray-600">PDF, TXT, DOC, DOCX</p>
+                </div>
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-medium text-gray-900">Summary Types</h4>
+                    <p class="text-sm text-gray-600">Executive summary, key points, detailed analysis</p>
+                </div>
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-medium text-gray-900">Features</h4>
+                    <p class="text-sm text-gray-600">Multi-language support, customizable length</p>
+                </div>
+            </div>
+            <a href="{{ url_for('intellilearn.legal_summarizer') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors mt-4">
+                <i class="fas fa-play mr-2"></i>Try Document Summary
+            </a>
+        </div>
+        
+        <!-- Video Summarization -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-video text-indigo-600 text-2xl mr-3"></i>
+                <h3 class="text-xl font-semibold text-gray-900">Video Summarization</h3>
+            </div>
+            <p class="text-gray-600 mb-4">Extract key insights and summaries from educational videos.</p>
+            <div class="space-y-3">
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-medium text-gray-900">Supported Sources</h4>
+                    <p class="text-sm text-gray-600">YouTube, Vimeo, direct video uploads</p>
+                </div>
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-medium text-gray-900">Content Types</h4>
+                    <p class="text-sm text-gray-600">Educational, lectures, presentations, conferences</p>
+                </div>
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-medium text-gray-900">Output</h4>
+                    <p class="text-sm text-gray-600">Summary, key points, transcript, timestamps</p>
+                </div>
+            </div>
+            <a href="{{ url_for('intellilearn.video_summarizer') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors mt-4">
+                <i class="fas fa-play mr-2"></i>Try Video Summary
+            </a>
+        </div>
+        
+        <!-- Research Tools -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-search text-indigo-600 text-2xl mr-3"></i>
+                <h3 class="text-xl font-semibold text-gray-900">Research Tools</h3>
+            </div>
+            <p class="text-gray-600 mb-4">Find relevant research papers and academic content.</p>
+            <div class="space-y-3">
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-medium text-gray-900">Search Capabilities</h4>
+                    <p class="text-sm text-gray-600">Natural language queries, keyword matching</p>
+                </div>
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-medium text-gray-900">Content Sources</h4>
+                    <p class="text-sm text-gray-600">Academic databases, research repositories</p>
+                </div>
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <h4 class="font-medium text-gray-900">Results</h4>
+                    <p class="text-sm text-gray-600">Relevance scores, abstracts, citations</p>
+                </div>
+            </div>
+            <a href="{{ url_for('intellilearn.research_recommender') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors mt-4">
+                <i class="fas fa-play mr-2"></i>Try Research Tools
+            </a>
+        </div>
+    </div>
+    
+    <!-- Additional Resources -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">Additional Resources</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-question-circle text-indigo-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">FAQ</h3>
+                <p class="text-gray-600 text-sm mb-4">Frequently asked questions and answers.</p>
+                <button class="text-indigo-600 hover:text-indigo-800 font-medium">View FAQ</button>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-book text-indigo-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Tutorials</h3>
+                <p class="text-gray-600 text-sm mb-4">Step-by-step tutorials and guides.</p>
+                <button class="text-indigo-600 hover:text-indigo-800 font-medium">View Tutorials</button>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-code text-indigo-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">API Reference</h3>
+                <p class="text-gray-600 text-sm mb-4">Complete API documentation.</p>
+                <a href="{{ url_for('main.api_reference') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">View API Reference</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact Support -->
+    <div class="bg-indigo-50 rounded-lg p-6 text-center">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-2">Need Help?</h2>
+        <p class="text-gray-600 mb-4">Can't find what you're looking for? Contact our support team.</p>
+        <a href="{{ url_for('main.contact') }}" class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+            <i class="fas fa-envelope mr-2"></i>Contact Support
+        </a>
+    </div>
+</div>
+{% endblock %}

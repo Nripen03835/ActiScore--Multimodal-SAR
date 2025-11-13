@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - ActiScore{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6"><i class="fas fa-cog text-indigo-600 mr-3"></i>Admin Dashboard</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-sm text-gray-500">Total Users</div>
+            <div class="text-2xl font-semibold text-gray-900">{{ total_users }}</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-sm text-gray-500">Total Videos</div>
+            <div class="text-2xl font-semibold text-gray-900">{{ total_videos }}</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-sm text-gray-500">Total Summaries</div>
+            <div class="text-2xl font-semibold text-gray-900">{{ total_summaries }}</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-sm text-gray-500">Total Papers</div>
+            <div class="text-2xl font-semibold text-gray-900">{{ total_papers }}</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Processing Status</h2>
+            <div class="space-y-2 text-sm text-gray-700">
+                <div class="flex justify-between"><span>Pending</span><span class="font-medium">{{ processing_stats.pending }}</span></div>
+                <div class="flex justify-between"><span>Processing</span><span class="font-medium">{{ processing_stats.processing }}</span></div>
+                <div class="flex justify-between"><span>Completed</span><span class="font-medium">{{ processing_stats.completed }}</span></div>
+                <div class="flex justify-between"><span>Failed</span><span class="font-medium">{{ processing_stats.failed }}</span></div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Users</h2>
+            <div class="divide-y">
+                {% for u in recent_users %}
+                <div class="py-2 flex justify-between">
+                    <div>
+                        <div class="font-medium text-gray-900">{{ u.name }}</div>
+                        <div class="text-xs text-gray-500">{{ u.email }}</div>
+                    </div>
+                    <div class="text-xs text-gray-500">{{ u.created_at.strftime('%Y-%m-%d') }}</div>
+                </div>
+                {% else %}
+                <div class="py-2 text-sm text-gray-500">No users found</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

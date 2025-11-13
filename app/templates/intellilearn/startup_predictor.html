@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Startup Success Predictor - ActiScore{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2"><i class="fas fa-rocket text-indigo-600 mr-3"></i>Startup Success Predictor</h1>
+        <p class="text-gray-600">Estimate success probability and risk level with key startup factors.</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Enter Startup Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                <input type="text" id="sp-name" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="My Startup">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+                <select id="sp-industry" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="technology">Technology</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="finance">Finance</option>
+                    <option value="education">Education</option>
+                    <option value="retail">Retail</option>
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <textarea id="sp-description" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" rows="3" placeholder="What problem do you solve?"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Team Size</label>
+                <input type="number" id="sp-team-size" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="6">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Funding Amount (USD)</label>
+                <input type="number" id="sp-funding-amount" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="250000">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Market Size (USD)</label>
+                <input type="number" id="sp-market-size" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="50000000">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Competition Level</label>
+                <select id="sp-competition-level" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Product Stage</label>
+                <select id="sp-product-stage" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="idea">Idea</option>
+                    <option value="beta">Beta</option>
+                    <option value="mature">Mature</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                <select id="sp-location" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="us">US</option>
+                    <option value="eu">EU</option>
+                    <option value="asia">Asia</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="flex items-center">
+                <input type="checkbox" id="sp-previous-experience" class="mr-2">
+                <label for="sp-previous-experience" class="text-sm font-medium text-gray-700">Founders have previous startup experience</label>
+            </div>
+        </div>
+        <div class="mt-6">
+            <button id="sp-predict-btn" class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium"><i class="fas fa-chart-line mr-2"></i>Predict Success</button>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Prediction Result</h2>
+        <div id="sp-loading" class="hidden">
+            <div class="text-center py-12">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                <p class="text-gray-600">Calculating success probability...</p>
+            </div>
+        </div>
+        <div id="sp-empty" class="text-center py-12">
+            <i class="fas fa-rocket text-4xl text-gray-300 mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No Prediction Yet</h3>
+            <p class="text-gray-600">Fill in details and click Predict Success.</p>
+        </div>
+        <div id="sp-results" class="hidden">
+            <div class="mb-6">
+                <div class="flex items-center text-sm text-gray-600 mb-2">
+                    <span class="mr-4">Probability: <span id="sp-probability" class="font-semibold"></span></span>
+                    <span>Risk Level: <span id="sp-risk" class="font-semibold"></span></span>
+                </div>
+            </div>
+            <div class="mb-6">
+                <h4 class="font-semibold text-gray-900 mb-3">Recommendations</h4>
+                <ul id="sp-recommendations" class="space-y-2"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-gray-900">Recent Predictions</h2>
+            <button id="sp-clear-history" class="text-red-600 hover:text-red-800 text-sm"><i class="fas fa-trash mr-1"></i>Clear History</button>
+        </div>
+        <div id="sp-history" class="space-y-3">
+            <div class="text-center text-gray-500 py-8">
+                <i class="fas fa-history text-2xl mb-2"></i>
+                <p>No recent predictions</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+class StartupPredictorPage {
+    constructor() {
+        this.history = [];
+        this.current = null;
+        this.bind();
+        this.loadHistory();
+    }
+    bind() {
+        document.getElementById('sp-predict-btn').addEventListener('click', () => this.predict());
+        document.getElementById('sp-clear-history').addEventListener('click', () => this.clearHistory());
+    }
+    showLoading() {
+        document.getElementById('sp-loading').classList.remove('hidden');
+        document.getElementById('sp-empty').classList.add('hidden');
+        document.getElementById('sp-results').classList.add('hidden');
+    }
+    showEmpty() {
+        document.getElementById('sp-loading').classList.add('hidden');
+        document.getElementById('sp-empty').classList.remove('hidden');
+        document.getElementById('sp-results').classList.add('hidden');
+    }
+    showResults() {
+        document.getElementById('sp-loading').classList.add('hidden');
+        document.getElementById('sp-empty').classList.add('hidden');
+        document.getElementById('sp-results').classList.remove('hidden');
+    }
+    async predict() {
+        const payload = {
+            name: document.getElementById('sp-name').value.trim(),
+            description: document.getElementById('sp-description').value.trim(),
+            team_size: parseInt(document.getElementById('sp-team-size').value || '0', 10),
+            funding_amount: parseFloat(document.getElementById('sp-funding-amount').value || '0'),
+            market_size: parseFloat(document.getElementById('sp-market-size').value || '0'),
+            competition_level: document.getElementById('sp-competition-level').value,
+            product_stage: document.getElementById('sp-product-stage').value,
+            industry: document.getElementById('sp-industry').value,
+            location: document.getElementById('sp-location').value,
+            previous_experience: document.getElementById('sp-previous-experience').checked
+        };
+        this.showLoading();
+        try {
+            const response = await fetch('/ai/predict-startup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) {
+                throw new Error('Request failed');
+            }
+            const data = await response.json();
+            this.current = data;
+            document.getElementById('sp-probability').textContent = `${Math.round((data.success_probability || 0) * 100)}%`;
+            document.getElementById('sp-risk').textContent = data.risk_level || '';
+            const recEl = document.getElementById('sp-recommendations');
+            recEl.innerHTML = (data.recommendations || []).map(r => `<li class="flex items-start"><i class="fas fa-check-circle text-green-500 mr-2 mt-0.5"></i><span class="text-gray-700">${r}</span></li>`).join('');
+            this.showResults();
+            this.addHistory(payload, data);
+            ActiScore.showNotification('Prediction completed', 'success');
+        } catch (e) {
+            this.showEmpty();
+            ActiScore.showNotification('Failed to predict. Please try again.', 'error');
+        }
+    }
+    addHistory(input, result) {
+        const entry = { id: Date.now(), name: input.name || 'Unnamed Startup', probability: result.success_probability || 0, risk: result.risk_level || '', timestamp: new Date().toISOString() };
+        this.history.unshift(entry);
+        if (this.history.length > 10) this.history = this.history.slice(0, 10);
+        this.renderHistory();
+        this.saveHistory();
+    }
+    renderHistory() {
+        const el = document.getElementById('sp-history');
+        if (this.history.length === 0) {
+            el.innerHTML = `<div class="text-center text-gray-500 py-8"><i class="fas fa-history text-2xl mb-2"></i><p>No recent predictions</p></div>`;
+            return;
+        }
+        el.innerHTML = this.history.map(h => `
+            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-sm font-medium text-gray-900 truncate flex-1">${h.name}</span>
+                    <span class="text-xs text-gray-500">${Math.round(h.probability*100)}%</span>
+                </div>
+                <div class="text-xs text-gray-500 mb-1">${new Date(h.timestamp).toLocaleDateString()} ${new Date(h.timestamp).toLocaleTimeString()}</div>
+                <div class="text-xs text-gray-600">Risk: ${h.risk}</div>
+            </div>
+        `).join('');
+    }
+    clearHistory() {
+        if (confirm('Clear all prediction history?')) {
+            this.history = [];
+            this.renderHistory();
+            this.saveHistory();
+            ActiScore.showNotification('History cleared', 'info');
+        }
+    }
+    saveHistory() {
+        localStorage.setItem('startupPredictionsHistory', JSON.stringify(this.history));
+    }
+    loadHistory() {
+        const saved = localStorage.getItem('startupPredictionsHistory');
+        if (saved) {
+            try {
+                this.history = JSON.parse(saved);
+                this.renderHistory();
+            } catch {}
+        }
+    }
+}
+document.addEventListener('DOMContentLoaded', function() { window.startupPredictorPage = new StartupPredictorPage(); });
+function getCsrfToken() { const csrfToken = document.querySelector('meta[name="csrf-token"]'); return csrfToken ? csrfToken.content : ''; }
+</script>
+{% endblock %}
+

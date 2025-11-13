@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}API Reference - ActiScore{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            <i class="fas fa-code text-indigo-600 mr-3"></i>API Reference
+        </h1>
+        <p class="text-gray-600">
+            Complete reference for integrating ActiScore features into your applications.
+        </p>
+    </div>
+    
+    <!-- API Overview -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">API Overview</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Base URL</h3>
+                <div class="bg-gray-100 rounded-lg p-3 font-mono text-sm">
+                    https://api.actiscore.com/v1
+                </div>
+            </div>
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Authentication</h3>
+                <div class="bg-gray-100 rounded-lg p-3 font-mono text-sm">
+                    Bearer Token in Authorization header
+                </div>
+            </div>
+        </div>
+        <div class="mt-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Response Format</h3>
+            <p class="text-gray-600">All API responses are returned in JSON format with the following structure:</p>
+            <div class="bg-gray-900 text-green-400 rounded-lg p-4 mt-2 font-mono text-sm">
+                <pre>{
+  "success": true,
+  "data": { ... },
+  "message": "Operation completed successfully",
+  "timestamp": "2024-01-15T10:30:00Z"
+}</pre>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Authentication -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">Authentication</h2>
+        <p class="text-gray-600 mb-4">All API endpoints require authentication using Bearer tokens.</p>
+        
+        <div class="space-y-4">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Get API Token</h3>
+                <div class="bg-gray-900 text-green-400 rounded-lg p-4 font-mono text-sm">
+                    <pre>POST /auth/token
+Content-Type: application/json
+
+{
+  "email": "your-email@example.com",
+  "password": "your-password"
+}</pre>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Using the Token</h3>
+                <div class="bg-gray-900 text-green-400 rounded-lg p-4 font-mono text-sm">
+                    <pre>GET /api/emotion-analysis
+Authorization: Bearer YOUR_API_TOKEN
+Content-Type: application/json</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Emotion Analysis API -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+            <i class="fas fa-smile text-indigo-600 mr-2"></i>Emotion Analysis API
+        </h2>
+        
+        <div class="space-y-6">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Analyze Video Emotions</h3>
+                <div class="bg-gray-900 text-green-400 rounded-lg p-4 font-mono text-sm mb-2">
+                    <pre>POST /api/emotion-analysis
+Authorization: Bearer YOUR_API_TOKEN
+Content-Type: multipart/form-data
+
+video: [video file]
+options: {
+  "extract_audio": true,
+  "detect_faces": true,
+  "frame_interval": 30
+}</pre>
+                </div>
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 class="font-medium text-green-900 mb-2">Success Response</h4>
+                    <div class="bg-gray-900 text-green-400 rounded p-3 font-mono text-xs">
+                        <pre>{
+  "success": true,
+  "data": {
+    "dominant_emotion": "happy",
+    "confidence": 0.85,
+    "emotion_timeline": [...],
+    "audio_emotions": [...],
+    "processing_time": 12.5
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Document Summarization API -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+            <i class="fas fa-file-alt text-indigo-600 mr-2"></i>Document Summarization API
+        </h2>
+        
+        <div class="space-y-6">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Summarize Document</h3>
+                <div class="bg-gray-900 text-green-400 rounded-lg p-4 font-mono text-sm mb-2">
+                    <pre>POST /api/document-summarize
+Authorization: Bearer YOUR_API_TOKEN
+Content-Type: multipart/form-data
+
+document: [PDF/TXT/DOC file]
+options: {
+  "summary_type": "executive",
+  "max_length": 500,
+  "language": "en"
+}</pre>
+                </div>
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 class="font-medium text-green-900 mb-2">Success Response</h4>
+                    <div class="bg-gray-900 text-green-400 rounded p-3 font-mono text-xs">
+                        <pre>{
+  "success": true,
+  "data": {
+    "summary": "Document summary text...",
+    "key_points": ["Point 1", "Point 2", "Point 3"],
+    "original_length": 1500,
+    "summary_length": 200,
+    "processing_time": 3.2
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Video Summarization API -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+            <i class="fas fa-video text-indigo-600 mr-2"></i>Video Summarization API
+        </h2>
+        
+        <div class="space-y-6">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Summarize Video</h3>
+                <div class="bg-gray-900 text-green-400 rounded-lg p-4 font-mono text-sm mb-2">
+                    <pre>POST /api/video-summarize
+Authorization: Bearer YOUR_API_TOKEN
+Content-Type: application/json
+
+{
+  "video_url": "https://youtube.com/watch?v=...",
+  "summary_type": "educational",
+  "max_duration": 300,
+  "extract_transcript": true
+}</pre>
+                </div>
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 class="font-medium text-green-900 mb-2">Success Response</h4>
+                    <div class="bg-gray-900 text-green-400 rounded p-3 font-mono text-xs">
+                        <pre>{
+  "success": true,
+  "data": {
+    "title": "Video Title",
+    "summary": "Video summary text...",
+    "key_points": ["Point 1", "Point 2", "Point 3"],
+    "transcript": "Full transcript...",
+    "duration": "15:30",
+    "processing_time": 45.8
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Research Tools API -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+            <i class="fas fa-search text-indigo-600 mr-2"></i>Research Tools API
+        </h2>
+        
+        <div class="space-y-6">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Search Research Papers</h3>
+                <div class="bg-gray-900 text-green-400 rounded-lg p-4 font-mono text-sm mb-2">
+                    <pre>POST /api/research-search
+Authorization: Bearer YOUR_API_TOKEN
+Content-Type: application/json
+
+{
+  "query": "machine learning emotion recognition",
+  "keywords": ["deep learning", "multimodal"],
+  "max_results": 10,
+  "sort_by": "relevance"
+}</pre>
+                </div>
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 class="font-medium text-green-900 mb-2">Success Response</h4>
+                    <div class="bg-gray-900 text-green-400 rounded p-3 font-mono text-xs">
+                        <pre>{
+  "success": true,
+  "data": {
+    "query": "machine learning emotion recognition",
+    "papers": [
+      {
+        "title": "Deep Learning for Emotion Recognition",
+        "authors": ["John Doe", "Jane Smith"],
+        "abstract": "This paper presents...",
+        "year": 2023,
+        "relevance_score": 0.92
+      }
+    ],
+    "total_found": 25
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Error Handling -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">Error Handling</h2>
+        <p class="text-gray-600 mb-4">API errors are returned with appropriate HTTP status codes and error messages.</p>
+        
+        <div class="space-y-4">
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <h3 class="text-lg font-medium text-red-900 mb-2">Authentication Error</h3>
+                <div class="bg-gray-900 text-red-400 rounded p-3 font-mono text-xs">
+                    <pre>{
+  "success": false,
+  "error": "Invalid authentication token",
+  "message": "Please provide a valid Bearer token in the Authorization header"
+}</pre>
+                </div>
+            </div>
+            
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <h3 class="text-lg font-medium text-red-900 mb-2">Validation Error</h3>
+                <div class="bg-gray-900 text-red-400 rounded p-3 font-mono text-xs">
+                    <pre>{
+  "success": false,
+  "error": "Validation failed",
+  "message": "Missing required field: video_url"
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Rate Limiting -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">Rate Limiting</h2>
+        <p class="text-gray-600 mb-4">API requests are rate-limited to ensure fair usage.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="border border-gray-200 rounded-lg p-4">
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Free Tier</h3>
+                <p class="text-gray-600 text-sm">100 requests per day</p>
+                <p class="text-sm text-gray-500">5 requests per minute</p>
+            </div>
+            <div class="border border-gray-200 rounded-lg p-4">
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Pro Tier</h3>
+                <p class="text-gray-600 text-sm">1,000 requests per day</p>
+                <p class="text-sm text-gray-500">20 requests per minute</p>
+            </div>
+            <div class="border border-gray-200 rounded-lg p-4">
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Enterprise</h3>
+                <p class="text-gray-600 text-sm">Unlimited requests</p>
+                <p class="text-sm text-gray-500">Priority support</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SDKs and Libraries -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">SDKs and Libraries</h2>
+        <p class="text-gray-600 mb-4">Official SDKs for popular programming languages.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="border border-gray-200 rounded-lg p-4 text-center">
+                <i class="fab fa-python text-4xl text-blue-600 mb-2"></i>
+                <h3 class="text-lg font-medium text-gray-900">Python</h3>
+                <p class="text-sm text-gray-600 mb-2">pip install actiscore</p>
+                <button class="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200 transition-colors">Install</button>
+            </div>
+            <div class="border border-gray-200 rounded-lg p-4 text-center">
+                <i class="fab fa-node-js text-4xl text-green-600 mb-2"></i>
+                <h3 class="text-lg font-medium text-gray-900">Node.js</h3>
+                <p class="text-sm text-gray-600 mb-2">npm install actiscore</p>
+                <button class="px-3 py-1 bg-green-100 text-green-700 rounded text-sm hover:bg-green-200 transition-colors">Install</button>
+            </div>
+            <div class="border border-gray-200 rounded-lg p-4 text-center">
+                <i class="fab fa-java text-4xl text-red-600 mb-2"></i>
+                <h3 class="text-lg font-medium text-gray-900">Java</h3>
+                <p class="text-sm text-gray-600 mb-2">Maven dependency</p>
+                <button class="px-3 py-1 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200 transition-colors">Install</button>
+            </div>
+            <div class="border border-gray-200 rounded-lg p-4 text-center">
+                <i class="fas fa-code text-4xl text-purple-600 mb-2"></i>
+                <h3 class="text-lg font-medium text-gray-900">REST API</h3>
+                <p class="text-sm text-gray-600 mb-2">Direct HTTP calls</p>
+                <button class="px-3 py-1 bg-purple-100 text-purple-700 rounded text-sm hover:bg-purple-200 transition-colors">Use API</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
