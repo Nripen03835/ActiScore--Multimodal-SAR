@@ -80,16 +80,45 @@ def process_video():
             db.session.add(video)
             db.session.commit()
             
-            # Process video (placeholder for actual ML processing)
-            # In real implementation, this would be handled by Celery worker
+            # Process video synchronously
             process_video_emotions(video.id)
             
+            # Fetch results immediately to bypass Vercel ephemeral DB wipes
+            fer_results = FERResult.query.filter_by(video_id=video.id).all()
+            fer_data = [{
+                'timestamp': result.frame_ts,
+                'emotion': result.emotion,
+                'confidence': result.confidence,
+                'face_bbox': json.loads(result.face_bbox) if result.face_bbox else None
+            } for result in fer_results]
+            
+            ser_results = SERResult.query.filter_by(audio_id=video.id).all()
+            ser_data = [{
+                'timestamp': result.ts,
+                'emotion': result.emotion,
+                'confidence': result.confidence
+            } for result in ser_results]
+            
+            fusion_results = FusionResult.query.filter_by(video_id=video.id).all()
+            fusion_data = [{
+                'timestamp': result.timestamp,
+                'fer_emotion': result.fer_emotion,
+                'ser_emotion': result.ser_emotion,
+                'fused_label': result.fused_label,
+                'score': result.score
+            } for result in fusion_results]
+            
             return jsonify({
-                'message': 'Video uploaded and processing started',
-                'video_id': video.id,
-                'filename': filename,
-                'duration': duration,
-                'frames': frame_count
+                'message': 'Video processed successfully',
+                'video_info': {
+                    'id': video.id,
+                    'filename': video.original_filename,
+                    'duration': video.duration,
+                    'processing_status': 'completed'
+                },
+                'fer_results': fer_data,
+                'ser_results': ser_data,
+                'fusion_results': fusion_data
             }), 200
             
         except Exception as e:

@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User
@@ -22,6 +22,15 @@ def login():
             login_user(user, remember=remember_me)
             user.last_login = datetime.utcnow()
             db.session.commit()
+            
+            # Securely cache user info for Vercel ephemeral DB restoration
+            session['user_info'] = {
+                'id': user.id,
+                'email': user.email,
+                'name': user.name,
+                'role': user.role
+            }
+            session.permanent = True
             
             next_page = request.args.get('next')
             if not next_page or not next_page.startswith('/'):
@@ -80,5 +89,6 @@ def register():
 @login_required
 def logout():
     logout_user()
+    session.pop('user_info', None)
     flash('You have been logged out.', 'info')
     return redirect(url_for('main.index'))

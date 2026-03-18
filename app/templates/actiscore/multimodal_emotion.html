@@ -152,6 +152,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 let currentVideoId = null;
+let currentResultsData = null;
+let emotionChart = null;
 let emotionChart = null;
 
 // File upload handling
@@ -231,13 +233,11 @@ function uploadVideo() {
             throw new Error(data.error);
         }
         
-        currentVideoId = data.video_id;
-        ActiScore.showNotification('Video uploaded successfully!', 'success');
+        currentVideoId = data.video_info.id;
+        currentResultsData = data;
+        ActiScore.showNotification('Video analysis complete!', 'success');
         
-        // Poll for results
-        setTimeout(() => {
-            pollForResults(data.video_id);
-        }, 2000);
+        displayResults(data);
     })
     .catch(error => {
         ActiScore.showNotification('Upload failed: ' + error.message, 'error');
@@ -470,35 +470,29 @@ function downloadResults(format) {
         return;
     }
     
-    fetch(`/actiscore/results/${currentVideoId}`)
-        .then(response => response.json())
-        .then(data => {
-            const filename = `emotion-analysis-${currentVideoId}.${format}`;
-            let content, mimeType;
-            
-            if (format === 'json') {
-                content = JSON.stringify(data, null, 2);
-                mimeType = 'application/json';
-            } else if (format === 'csv') {
-                content = convertToCSV(data);
-                mimeType = 'text/csv';
-            }
-            
-            const blob = new Blob([content], { type: mimeType });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            ActiScore.showNotification('Results downloaded successfully', 'success');
-        })
-        .catch(error => {
-            ActiScore.showNotification('Download failed: ' + error.message, 'error');
-        });
+    const data = currentResultsData;
+    const filename = `emotion-analysis-${currentVideoId}.${format}`;
+    let content, mimeType;
+    
+    if (format === 'json') {
+        content = JSON.stringify(data, null, 2);
+        mimeType = 'application/json';
+    } else if (format === 'csv') {
+        content = convertToCSV(data);
+        mimeType = 'text/csv';
+    }
+    
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    ActiScore.showNotification('Results downloaded successfully', 'success');
 }
 
 function convertToCSV(data) {
