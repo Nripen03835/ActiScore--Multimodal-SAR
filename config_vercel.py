@@ -44,8 +44,8 @@ class ProductionConfig(Config):
 class VercelConfig(Config):
     """Vercel deployment configuration"""
     DEBUG = False
-    # Use SQLite for Vercel deployment (file-based database)
-    SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/app.db'
+    # Use external database (e.g. Postgres) if provided, otherwise fallback to SQLite
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:////tmp/app.db'
     
     # Simplified configuration for serverless deployment
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'vercel-deployment-secret-key'
