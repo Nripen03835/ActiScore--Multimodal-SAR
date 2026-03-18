@@ -1,8 +1,5 @@
-# Vercel deployment configuration
-vercel.json
-requirements-vercel.txt
-config_vercel.py
-vercel_app.py
+# Test and Dev Files
+tests/
 
 # Large dataset files
 Dataset/FER_Dataset/fer2013.csv

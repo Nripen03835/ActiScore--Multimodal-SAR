@@ -7,6 +7,9 @@ import pickle
 import json
 import random
 import numpy as np
+import cv2
+import base64
+import requests
 from config import Config
 
 def load_mock_fer_model():
@@ -116,6 +119,50 @@ def extract_mock_audio_features(audio_file_path):
     # Return random features for demonstration
     return np.random.rand(47)  # 47 features as defined in SER model
 
+def analyze_scene_with_qwen(video_path):
+    """Analyze a single frame of the video with Qwen 3.5 VLM MoE"""
+    try:
+        # Default to message if the video path string is literally mock/dummy path or empty
+        if not video_path or not os.path.exists(video_path):
+            return "Unable to analyze scene: Video file not found."
+            
+        cap = cv2.VideoCapture(video_path)
+        ret, frame = cap.read()
+        cap.release()
+        
+        if not ret:
+            return "Could not read frame from video for scene analysis."
+            
+        ret, buffer = cv2.imencode('.jpg', frame)
+        image_b64 = base64.b64encode(buffer).decode('utf-8')
+        
+        invoke_url = "https://integrate.api.nvidia.com/v1/chat/completions"
+        headers = {
+            "Authorization": "Bearer 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",
+            "Accept": "application/json"
+        }
+        
+        payload = {
+            "model": "qwen/qwen3.5-397b-a17b",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": f'Analyze the emotional and situational context of this scene briefly: <img src="data:image/jpeg;base64,{image_b64}" />'
+                }
+            ],
+            "max_tokens": 256,
+            "temperature": 0.5,
+            "top_p": 0.9,
+            "stream": False
+        }
+        
+        response = requests.post(invoke_url, headers=headers, json=payload, timeout=30)
+        response.raise_for_status()
+        
+        return response.json()['choices'][0]['message']['content']
+    except Exception as e:
+        return f"Scene Analysis Failed: {str(e)}"
+
 def process_video_emotions_mock(video_path, user_id, video_id):
     """
     Process video for emotion analysis using mock models
@@ -135,7 +182,8 @@ def process_video_emotions_mock(video_path, user_id, video_id):
     results = {
         'fer_results': [],
         'ser_results': [],
-        'fusion_results': []
+        'fusion_results': [],
+        'scene_analysis': analyze_scene_with_qwen(video_path)
     }
     
     try:

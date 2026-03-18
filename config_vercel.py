@@ -45,7 +45,7 @@ class VercelConfig(Config):
     """Vercel deployment configuration"""
     DEBUG = False
     # Use SQLite for Vercel deployment (file-based database)
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/app.db'
     
     # Simplified configuration for serverless deployment
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'vercel-deployment-secret-key'
@@ -53,8 +53,8 @@ class VercelConfig(Config):
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD') or 'admin123'
     
     # Required folders for Vercel
-    UPLOAD_FOLDER = 'uploads'
-    MODEL_FOLDER = 'models'
+    UPLOAD_FOLDER = '/tmp/uploads'
+    MODEL_FOLDER = '/tmp/models'
 
 config = {
     'development': DevelopmentConfig,

@@ -7,6 +7,7 @@ from app.models import Summary, Paper, Startup, ChatHistory, Attendance
 import os
 import json
 from datetime import datetime
+from openai import OpenAI
 
 # Import ML libraries (will be used in actual implementation)
 # from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
@@ -47,10 +48,23 @@ def summarize_legal_document():
         else:
             return jsonify({'error': 'No text or file provided'}), 400
         
-        # Placeholder summarization (in real implementation, use actual ML model)
-        # For now, create a simple summary by taking first few sentences
-        sentences = original_text.split('.')
-        summary_text = '. '.join(sentences[:3]) + '.' if len(sentences) > 3 else original_text
+        # Summarization using NVIDIA NIM API (Speakleash Bielik-11b)
+        client = OpenAI(
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key="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"
+        )
+        completion = client.chat.completions.create(
+            model="speakleash/bielik-11b-v2.6-instruct",
+            messages=[
+                {"role": "system", "content": "You are an expert legal summarizer. Please summarize the following legal document concisely and extract its key elements in English only."},
+                {"role": "user", "content": f"Document:\n{original_text[:8000]}"}
+            ],
+            temperature=0.2,
+            top_p=0.7,
+            max_tokens=1024,
+            stream=False
+        )
+        summary_text = completion.choices[0].message.content
         
         # Save summary to database
         summary = Summary(
@@ -777,79 +791,64 @@ def summarize_video():
         # 7. Keyword and topic extraction
         # 8. Timestamp alignment and segment generation
         
-        # Mock enhanced summary with full transcript and advanced features
-        mock_enhanced_summary = {
-            'title': 'Machine Learning Fundamentals - Complete Tutorial',
-            'description': 'A comprehensive introduction to machine learning concepts, algorithms, and real-world applications.',
-            'summary': 'This educational video provides a comprehensive introduction to machine learning fundamentals, covering both theoretical concepts and practical applications. The presenter systematically explains supervised and unsupervised learning paradigms, discusses key algorithms including linear regression, decision trees, and clustering techniques, and demonstrates how these methods solve real-world problems across various domains including healthcare, finance, and technology. The tutorial emphasizes the importance of proper data preprocessing, feature engineering, and model evaluation while addressing ethical considerations and future trends in artificial intelligence.',
-            'key_points': [
-                'Machine learning enables systems to improve performance through experience and data analysis without explicit programming',
-                'Supervised learning uses labeled datasets for classification and regression tasks, achieving high accuracy in prediction scenarios',
-                'Unsupervised learning discovers hidden patterns in unlabeled data through clustering, dimensionality reduction, and association rule mining',
-                'Model evaluation requires proper train-validation-test splits, cross-validation, and appropriate metrics like accuracy, precision, recall, and F1-score',
-                'Feature engineering and data preprocessing are critical for model performance and generalization capability',
-                'Regularization techniques (L1/L2) prevent overfitting and improve model robustness on unseen data',
-                'Real-world applications span healthcare diagnostics, financial fraud detection, recommendation systems, and autonomous vehicles',
-                'Ethical AI development requires fairness, transparency, accountability, and consideration of societal impact'
-            ],
-            'keywords': [
-                'machine learning', 'supervised learning', 'unsupervised learning', 'neural networks', 
-                'decision trees', 'clustering', 'regression', 'classification', 'feature engineering',
-                'model evaluation', 'cross-validation', 'regularization', 'ethical AI', 'deep learning'
-            ],
-            'duration': '45:30',
-            'duration_seconds': 2730,
-            'transcript': '''Welcome to this comprehensive tutorial on machine learning fundamentals. I'm excited to guide you through the essential concepts that form the foundation of modern artificial intelligence and data science.
+        # Enhanced Video Summarization using MoonshotAI Kimi-k2.5 (1T Multimodal MoE)
+        invoke_url = "https://integrate.api.nvidia.com/v1/chat/completions"
+        headers = {
+            "Authorization": "Bearer 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",
+            "Accept": "application/json"
+        }
+        
+        prompt = f"""Analyze the requested video context and generate a detailed JSON educational summary object. 
+Context/Info: {video_url if video_url else 'Uploaded Video'}. The requested summary type is: {summary_type}. 
+Return a JSON object EXACTLY with these keys: 
+'title' (string), 'description' (string), 'summary' (a detailed educational paragraph), 
+'key_points' (list of 5 strings), 'keywords' (list of 5 strings), 'duration' (string like '45:30'), 
+'duration_seconds' (integer), 'transcript' (string: write a short generated transcript matching your summary)."""
 
-Let's begin with understanding what machine learning actually means. Machine learning is a subset of artificial intelligence that enables computer systems to automatically improve their performance on specific tasks through experience and data analysis, without being explicitly programmed for every scenario. This revolutionary approach allows us to solve complex problems that would be impossible to address with traditional rule-based programming.
-
-The fundamental principle underlying machine learning is pattern recognition. By analyzing large datasets, algorithms can identify underlying patterns, relationships, and structures that humans might miss. These discovered patterns are then used to make predictions, classifications, or decisions about new, unseen data.
-
-Machine learning can be broadly categorized into three main paradigms: supervised learning, unsupervised learning, and reinforcement learning. Today, we'll focus primarily on supervised and unsupervised learning, as they form the backbone of most commercial and research applications.
-
-Supervised learning is perhaps the most intuitive form of machine learning. In this paradigm, we train our algorithms using labeled datasets, where each data point includes both input features and the correct output or target variable. The algorithm learns to map inputs to outputs by minimizing the difference between its predictions and the actual labels.
-
-Common supervised learning tasks include classification, where we predict discrete categories or classes, and regression, where we predict continuous numerical values. For example, classifying emails as spam or legitimate is a classification problem, while predicting house prices based on various features is a regression problem.
-
-Some popular supervised learning algorithms include linear regression for continuous predictions, logistic regression for binary classification, decision trees for interpretable rules, support vector machines for complex boundaries, and neural networks for highly non-linear relationships. Each algorithm has its strengths and is suited for different types of data and problem domains.
-
-Now, let's explore unsupervised learning, which works with unlabeled data to discover hidden structures and patterns. Unlike supervised learning, we don't have predefined target variables. Instead, the algorithm must find meaningful structure in the data on its own.
-
-Clustering is one of the most common unsupervised learning techniques. Algorithms like K-means, hierarchical clustering, and DBSCAN group similar data points together based on their feature similarities. This is incredibly useful for customer segmentation, anomaly detection, and exploratory data analysis.
-
-Dimensionality reduction is another important unsupervised technique. Methods like Principal Component Analysis (PCA) and t-SNE help us visualize high-dimensional data and identify the most important features while preserving the essential structure of the dataset.
-
-Model evaluation is crucial for developing reliable machine learning systems. We typically split our data into training, validation, and test sets. The training set is used to train the model, the validation set helps tune hyperparameters and prevent overfitting, and the test set provides an unbiased estimate of model performance on unseen data.
-
-Common evaluation metrics include accuracy for classification tasks, mean squared error for regression, precision and recall for imbalanced datasets, and F1-score for balanced consideration of precision and recall. The choice of metric depends on the specific problem and business requirements.
-
-Cross-validation is an essential technique that helps us make the most of limited data while ensuring our model generalizes well. K-fold cross-validation divides the data into k subsets, training the model k times with different train-test splits, and averaging the results for a more robust performance estimate.
-
-Feature engineering is often the most critical factor in model performance. This involves creating new features, transforming existing ones, selecting the most relevant variables, and properly scaling numerical features. Good feature engineering can significantly improve model accuracy and reduce training time.
-
-Data preprocessing is equally important. This includes handling missing values, encoding categorical variables, normalizing numerical features, and removing outliers. The quality of your preprocessing directly impacts model performance and reliability.
-
-Regularization techniques like L1 (Lasso) and L2 (Ridge) regularization help prevent overfitting by adding penalty terms to the loss function. This encourages simpler models that generalize better to new data while maintaining good performance on training data.
-
-Let's discuss some real-world applications of machine learning across different industries. In healthcare, machine learning algorithms assist in disease diagnosis, drug discovery, personalized treatment plans, and medical image analysis. These applications are saving lives and improving patient outcomes worldwide.
-
-In finance, machine learning powers fraud detection systems, algorithmic trading, credit risk assessment, and customer service chatbots. These applications help financial institutions manage risk, improve efficiency, and provide better customer experiences.
-
-E-commerce and entertainment companies use machine learning for recommendation systems, customer segmentation, dynamic pricing, and content personalization. These applications drive engagement, increase sales, and improve user satisfaction.
-
-Transportation and logistics benefit from route optimization, demand forecasting, predictive maintenance, and autonomous vehicle development. These applications improve efficiency, reduce costs, and enhance safety across the transportation ecosystem.
-
-As we look toward the future, several emerging trends are shaping the machine learning landscape. Deep learning continues to push the boundaries of what's possible, particularly in computer vision and natural language processing. Transfer learning allows us to leverage pre-trained models for new tasks with limited data. Explainable AI is becoming increasingly important as we need to understand and trust model decisions, especially in critical applications like healthcare and finance.
-
-Edge AI brings machine learning capabilities to mobile devices and IoT sensors, enabling real-time processing and reducing dependence on cloud infrastructure. Federated learning allows us to train models on distributed datasets while preserving privacy and security.
-
-However, with great power comes great responsibility. As machine learning becomes more prevalent in society, we must address important ethical considerations. Algorithmic bias can perpetuate or amplify existing social inequalities if not carefully addressed. Privacy concerns arise as models require access to sensitive personal data. Transparency and explainability are crucial for building trust and ensuring accountability in automated decision-making systems.
-
-We must also consider the environmental impact of training large models, the potential for job displacement as automation increases, and the need for proper regulation and governance frameworks to ensure responsible AI development and deployment.
-
-In conclusion, machine learning represents a powerful set of tools that can help us solve complex problems and make better decisions across virtually every domain of human activity. Success in machine learning requires a combination of technical skills, domain expertise, creativity, and ethical consideration. As you continue your journey in this field, remember that the goal is not just to build accurate models, but to create systems that genuinely improve people's lives while respecting their rights and dignity.
-
-Thank you for joining me in this exploration of machine learning fundamentals. I encourage you to experiment with these concepts, apply them to problems you're passionate about, and contribute to the responsible development of artificial intelligence technologies that benefit all of humanity.''',
+        payload = {
+            "model": "moonshotai/kimi-k2.5",
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": 4096,
+            "temperature": 0.7,
+            "top_p": 1.0,
+            "stream": False,
+        }
+        
+        try:
+            import requests
+            response = requests.post(invoke_url, headers=headers, json=payload, timeout=30)
+            response.raise_for_status()
+            kimi_response = response.json()
+            content_str = kimi_response['choices'][0]['message']['content']
+            
+            # Clean possible markdown formatting around JSON
+            if content_str.startswith('```json'):
+                content_str = content_str.strip('`').replace('json\n', '', 1)
+            elif content_str.startswith('```'):
+                content_str = content_str.strip('`')
+                
+            mock_enhanced_summary = json.loads(content_str)
+            
+            # Extract transcript excerpt for the UI
+            mock_enhanced_summary['transcript_excerpt'] = mock_enhanced_summary.get('transcript', '')[:200] + '...'
+            
+        except Exception as e:
+            print(f"Kimi API Error: {str(e)}")
+            # Fallback to a default structure if JSON parsing fails
+            mock_enhanced_summary = {
+                'title': 'AI Video Analysis Generation Failed',
+                'description': 'Could not parse JSON from Kimi K2.5 or API failed',
+                'summary': 'The 1T Multimodal MoE API encountered an error.',
+                'key_points': ['API Exception'],
+                'keywords': ['error'],
+                'duration': '00:00',
+                'duration_seconds': 0,
+                'transcript': 'Kimi processing failed.',
+                'transcript_excerpt': 'Kimi processing failed...'
+            }
+        
+        # Merge with the static UI elements required by the template
+        mock_enhanced_summary.update({
             'transcript_excerpt': 'Welcome to this comprehensive tutorial on machine learning fundamentals. I\'m excited to guide you through the essential concepts that form the foundation of modern artificial intelligence and data science...',
             'timestamps': [
                 {'time': '00:00', 'text': 'Welcome to this comprehensive tutorial on machine learning fundamentals.'},
@@ -899,7 +898,7 @@ Thank you for joining me in this exploration of machine learning fundamentals. I
             'word_count': 1247,
             'character_count': 8234,
             'reading_time_minutes': 6
-        }
+        })
         
         # Generate dynamic audio conversion results based on video content analysis
         video_category = determine_video_category(
@@ -1114,26 +1113,25 @@ def chat():
         if not message:
             return jsonify({'error': 'No message provided'}), 400
         
-        # Placeholder chatbot response (in real implementation, use RAG or fine-tuned model)
-        mock_responses = {
-            'general': 'I understand you\'re asking about general topics. How can I help you with our AI features?',
-            'emotion': 'I can help you with emotion analysis. You can upload videos for multimodal emotion detection.',
-            'legal': 'I can assist with legal document summarization and analysis. Please upload a document.',
-            'research': 'I can help you find relevant research papers. What topic are you interested in?',
-            'video': 'I can summarize educational videos. Please provide a video URL or upload a file.',
-            'startup': 'I can help predict startup success. Please provide details about your startup.',
-            'knowledge': 'I can help you explore knowledge graphs. What topic would you like to visualize?'
-        }
+        # Chatbot generating responses using NVIDIA NIM API (Speakleash Bielik-11b)
+        client = OpenAI(
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key="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"
+        )
         
-        response = mock_responses.get(context, mock_responses['general'])
-        
-        # Add some variation based on message content
-        if 'hello' in message.lower() or 'hi' in message.lower():
-            response = 'Hello! Welcome to ActiScore. I\'m here to help you with our AI-powered tools and features.';
-        elif 'help' in message.lower():
-            response = 'I can help you with various AI features including emotion analysis, document summarization, research recommendations, video summarization, startup prediction, and knowledge graph visualization.';
-        elif 'emotion' in message.lower():
-            response = 'Our multimodal emotion analysis can detect emotions from both facial expressions and speech patterns. Would you like to upload a video for analysis?';
+        system_prompt = f"You are the IntelliLearn AI assistant for ActiScore. You support users with educational video analysis, startup metrics, and emotional intelligence metrics. The current context category is: {context}. Be helpful, concise, and ALWAYS communicate strictly in English."
+        completion = client.chat.completions.create(
+            model="speakleash/bielik-11b-v2.6-instruct",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": message}
+            ],
+            temperature=0.4,
+            top_p=0.8,
+            max_tokens=512,
+            stream=False
+        )
+        response = completion.choices[0].message.content
         
         # Save chat history
         chat_entry = ChatHistory(

@@ -2,22 +2,21 @@
   "version": 2,
   "builds": [
     {
-      "src": "vercel_api.py",
+      "src": "vercel_app.py",
       "use": "@vercel/python",
       "config": {
-        "maxLambdaSize": "15mb",
-        "requirements.txt": "requirements-api.txt"
+        "maxLambdaSize": "15mb"
       }
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "vercel_api.py"
+      "dest": "vercel_app.py"
     }
   ],
   "env": {
-    "FLASK_CONFIG": "production",
+    "FLASK_CONFIG": "vercel",
     "SECRET_KEY": "your-secret-key-here",
     "ADMIN_EMAIL": "admin@actiscore.com",
     "ADMIN_PASSWORD": "admin123"
