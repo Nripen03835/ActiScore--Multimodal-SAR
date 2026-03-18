@@ -7,7 +7,10 @@ import pickle
 import json
 import random
 import numpy as np
-import cv2
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 import base64
 import requests
 from config import Config
@@ -125,6 +128,9 @@ def analyze_scene_with_qwen(video_path):
         # Default to message if the video path string is literally mock/dummy path or empty
         if not video_path or not os.path.exists(video_path):
             return "Unable to analyze scene: Video file not found."
+            
+        if cv2 is None:
+            return "Unable to analyze scene: OpenCV is not installed or available."
             
         cap = cv2.VideoCapture(video_path)
         ret, frame = cap.read()
