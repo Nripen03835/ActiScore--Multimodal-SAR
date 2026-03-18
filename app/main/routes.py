@@ -1,5 +1,5 @@
 from flask import render_template, request, jsonify, current_app
-from flask_login import login_required, current_user
+from app.auth.utils import login_required, current_user
 from app.main import bp
 from app.models import User, Video, Summary, Paper
 from app import db

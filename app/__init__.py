@@ -1,14 +1,12 @@
-from flask import Flask
+from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager
 from flask_caching import Cache
 from config import Config
 import os
 
 db = SQLAlchemy()
 migrate = Migrate()
-login_manager = LoginManager()
 cache = Cache()
 
 def create_app(config_class=Config):
@@ -29,11 +27,30 @@ def create_app(config_class=Config):
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
-    login_manager.init_app(app)
     cache.init_app(app)
     
-    login_manager.login_view = 'auth.login'
-    login_manager.login_message = 'Please log in to access this page.'
+    # Inject current_user deeply into templates natively bypassing Flask-Login
+    from app.auth.utils import current_user
+    @app.context_processor
+    def inject_user():
+        return dict(current_user=current_user)
+    
+    # Register error handlers
+    from app.main import routes as main_routes
+    app.register_error_handler(404, main_routes.not_found_error)
+    app.register_error_handler(500, main_routes.internal_error)
+    
+    # Global Authentication Lock (User asked only at starting!)
+    @app.before_request
+    def global_login_check():
+        from flask import request, redirect, url_for, session
+        allowed_endpoints = ['auth.login', 'auth.register', 'static', 'main.index']
+        # Allow OPTIONS requests to pass through (CORS)
+        if request.method == 'OPTIONS':
+            return
+        if request.endpoint and request.endpoint not in allowed_endpoints:
+            if not session.get('user_info'):
+                return redirect(url_for('auth.login'))
     
     # Register blueprints
     from app.main import bp as main_bp

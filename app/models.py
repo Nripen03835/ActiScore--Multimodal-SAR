@@ -1,6 +1,5 @@
 from datetime import datetime
-from flask_login import UserMixin
-from app import db, login_manager
+from app import db
 from flask import session
 
 # PostgreSQL-specific imports (will be conditionally imported)
@@ -10,30 +9,7 @@ except ImportError:
     # Fallback for SQLite
     ARRAY = None
 
-@login_manager.user_loader
-def load_user(user_id):
-    user = User.query.get(int(user_id))
-    
-    # Vercel Ephemeral Storage Fix: Recreate user if DB was wiped but session is valid
-    if not user and 'user_info' in session:
-        info = session['user_info']
-        if int(user_id) == info.get('id'):
-            user = User(
-                id=info['id'],
-                name=info['name'],
-                email=info['email'],
-                role=info['role'],
-                password_hash='restored_from_session_cookie'
-            )
-            try:
-                db.session.add(user)
-                db.session.commit()
-            except Exception:
-                db.session.rollback()
-                
-    return user
-
-class User(UserMixin, db.Model):
+class User(db.Model):
     __tablename__ = 'users'
     
     id = db.Column(db.Integer, primary_key=True)

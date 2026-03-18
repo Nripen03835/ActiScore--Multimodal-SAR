@@ -1,5 +1,5 @@
 from flask import render_template, request, jsonify, redirect, url_for, flash
-from flask_login import login_required, current_user
+from app.auth.utils import login_required, current_user
 from functools import wraps
 from app.admin import bp
 from app import db
