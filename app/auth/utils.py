@@ -2,6 +2,17 @@ from flask import session, redirect, url_for, request
 from functools import wraps
 from werkzeug.local import LocalProxy
 
+class AnonymousUser:
+    """Mock user object for unauthenticated sessions to prevent missing attribute errors."""
+    @property
+    def is_authenticated(self): return False
+    @property
+    def is_active(self): return False
+    @property
+    def is_anonymous(self): return True
+    def get_id(self): return None
+    def is_admin(self): return False
+
 def get_current_user():
     """Proxy function to securely rebuild and provide the user object from the session cookie."""
     from app.models import User
@@ -9,7 +20,7 @@ def get_current_user():
     
     info = session.get('user_info')
     if not info:
-        return None
+        return AnonymousUser()
         
     user = User.query.get(info['id'])
     

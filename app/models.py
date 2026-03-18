@@ -20,6 +20,19 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
     is_active = db.Column(db.Boolean, default=True)
+    provider_id = db.Column(db.String(100), nullable=True) # Used for OAuth
+    
+    # Flask-Login UserMixin legacy support properties
+    @property
+    def is_authenticated(self):
+        return True
+        
+    @property
+    def is_anonymous(self):
+        return False
+        
+    def get_id(self):
+        return str(self.id)
     
     # Relationships
     videos = db.relationship('Video', backref='user', lazy='dynamic', cascade='all, delete-orphan')
